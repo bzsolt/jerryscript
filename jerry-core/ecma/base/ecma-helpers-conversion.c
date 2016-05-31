@@ -1118,9 +1118,7 @@ ecma_number_to_utf8_string (ecma_number_t num, /**< ecma-number */
     }
     else
     {
-      ecma_number_t p = ecma_number_get_prev (num);
-      ecma_number_t q = ecma_number_get_next (p);
-      JERRY_ASSERT (q == num);
+      JERRY_ASSERT (ecma_number_get_next (ecma_number_get_prev (num)) == num);
 
       // 5.
       uint32_t num_uint32 = ecma_number_to_uint32 (num);
