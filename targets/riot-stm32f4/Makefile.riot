@@ -35,8 +35,8 @@ libjerry:
 	cmake -B$(INTERM) -H./ \
 	 -DEXTERNAL_PORT_DIR=UNDEFINED \
 	 -DENABLE_LTO=OFF \
-	 -DENABLE_VALGRIND=OFF \
-	 -DCMAKE_TOOLCHAIN_FILE=build/configs/toolchain_external.cmake \
+	 -DFEATURE_VALGRIND=OFF \
+	 -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_external.cmake \
 	 -DCOMPILER_DEFAULT_LIBC=ON \
 	 -DEXTERNAL_CMAKE_SYSTEM_PROCESSOR=armv7l-hf \
 	 -DEXTERNAL_CMAKE_C_COMPILER=arm-none-eabi-gcc \
@@ -44,9 +44,9 @@ libjerry:
 	 -DEXTERNAL_COMPILE_FLAGS="$(EXT_CFLAGS)" \
 	 -DEXTERNAL_MEM_HEAP_SIZE_KB=$(JERRYHEAP)
 
-	make -C $(INTERM) $(TYPE).external
-	cp `cat $(INTERM)/$(TYPE).external/list` $(OUTPUT)/.
-	cp $(OUTPUT)/lib$(TYPE).jerry-core.a $(COPYTARGET)/libjerrycore.a
+	make -C $(INTERM) external
+	cp `cat $(INTERM)/external/list` $(OUTPUT)/.
+	cp $(OUTPUT)/libjerry-core.a $(COPYTARGET)/libjerrycore.a
 
 riot-jerry: libjerry
 	make -f ./targets/riot-stm32f4/Makefile
