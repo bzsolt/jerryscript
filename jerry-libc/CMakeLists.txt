@@ -1,4 +1,5 @@
 # Copyright 2015-2016 Samsung Electronics Co., Ltd.
+# Copyright 2016 University of Szeged.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
 
 cmake_minimum_required (VERSION 2.8.12)
 project (Jerry_LibC C ASM)
+set(JERRY_LIBC_NAME    jerry-libc)
 
 # Compiler / linker flags
 set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
@@ -115,38 +117,27 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
 
 # Platform-specific configuration
  set(DEFINES_LIBC ${DEFINES_LIBC} ${DEFINES_LIBC_${PLATFORM}})
+ set(DEFINES_LIBC ${DEFINES_LIBC} ${DEFINES_LIBC_${BUILD_MODE}})
+ set(INCLUDE_LIBC ${INCLUDE_LIBC} ${INCLUDE_LIBC_${PLATFORM_EXT}})
 
-# Targets declaration
- add_custom_target (jerry-libc-all)
+ add_library(${JERRY_LIBC_NAME} STATIC ${SOURCE_LIBC} ${SOURCE_LIBC_${PLATFORM_EXT}})
+ set_property(TARGET ${JERRY_LIBC_NAME}
+              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBC} ${FLAGS_COMMON_${BUILD_MODE}}")
 
- string(TOLOWER ${PLATFORM_EXT} PLATFORM_L)
- set(TARGET_NAME jerry-libc.${PLATFORM_L})
+# Jerry
+ target_compile_definitions(${JERRY_LIBC_NAME} PRIVATE ${DEFINES_LIBC})
+ target_include_directories(${JERRY_LIBC_NAME} PRIVATE ${INCLUDE_LIBC})
+ target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
 
- function(declare_targets_for_build_mode BUILD_MODE)
-  set(TARGET_NAME ${BUILD_MODE_PREFIX_${BUILD_MODE}}.${TARGET_NAME})
-  set(DEFINES_LIBC ${DEFINES_LIBC} ${DEFINES_LIBC_${BUILD_MODE}})
-  set(INCLUDE_LIBC ${INCLUDE_LIBC} ${INCLUDE_LIBC_${PLATFORM_EXT}})
+ # Third-party MCU library
+  if(DEFINED SOURCE_THIRD_PARTY_${PLATFORM_EXT})
+   set(SUFFIX_THIRD_PARTY_LIB ".third-party.lib")
+   set(THIRD_PARTY_MCU_LIB ${JERRY_LIBC_NAME}${SUFFIX_THIRD_PARTY_LIB})
 
-  # Jerry
-   add_library(${TARGET_NAME}.lib STATIC ${SOURCE_LIBC} ${SOURCE_LIBC_${PLATFORM_EXT}})
-   set_property(TARGET ${TARGET_NAME}.lib
-                PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBC} ${FLAGS_COMMON_${BUILD_MODE}}")
-   target_compile_definitions(${TARGET_NAME}.lib PRIVATE ${DEFINES_LIBC})
-   target_include_directories(${TARGET_NAME}.lib PRIVATE ${INCLUDE_LIBC})
-   target_include_directories(${TARGET_NAME}.lib SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-   add_dependencies(jerry-libc-all ${TARGET_NAME}.lib)
-
-  # Third-party MCU library
-   if(DEFINED SOURCE_THIRD_PARTY_${PLATFORM_EXT})
-    add_library(${TARGET_NAME}${SUFFIX_THIRD_PARTY_LIB} STATIC ${SOURCE_THIRD_PARTY_${PLATFORM_EXT}})
-    set_property(TARGET ${TARGET_NAME}${SUFFIX_THIRD_PARTY_LIB}
-                 PROPERTY COMPILE_FLAGS "${FLAGS_COMMON_${BUILD_MODE}}")
-    target_include_directories(${TARGET_NAME}${SUFFIX_THIRD_PARTY_LIB} PRIVATE ${INCLUDE_THIRD_PARTY_${PLATFORM_EXT}})
-    target_include_directories(${TARGET_NAME}${SUFFIX_THIRD_PARTY_LIB} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-    target_link_libraries(${TARGET_NAME}.lib ${TARGET_NAME}${SUFFIX_THIRD_PARTY_LIB})
-   endif()
- endfunction()
-
- declare_targets_for_build_mode(DEBUG)
- declare_targets_for_build_mode(RELEASE)
- declare_targets_for_build_mode(UNITTESTS)
+   add_library(${THIRD_PARTY_MCU_LIB} STATIC ${SOURCE_THIRD_PARTY_${PLATFORM_EXT}})
+   set_property(TARGET ${THIRD_PARTY_MCU_LIB}
+                PROPERTY COMPILE_FLAGS "${FLAGS_COMMON_${BUILD_MODE}}")
+   target_include_directories(${THIRD_PARTY_MCU_LIB} PRIVATE ${INCLUDE_THIRD_PARTY_${PLATFORM_EXT}})
+   target_include_directories(${THIRD_PARTY_MCU_LIB} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+   target_link_libraries(${JERRY_LIBC_NAME} ${THIRD_PARTY_MCU_LIB})
+  endif()

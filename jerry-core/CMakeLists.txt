@@ -1,4 +1,5 @@
 # Copyright 2015-2016 Samsung Electronics Co., Ltd.
+# Copyright 2016 University of Szeged.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
 
 cmake_minimum_required (VERSION 2.8.12)
 project (JerryCore C ASM)
+
+set(JERRY_CORE_NAME    jerry-core)
 
 # Definitions
  # Get version information from git
@@ -201,6 +204,23 @@ project (JerryCore C ASM)
 
 # Platform-specific configuration
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
+set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${BUILD_MODE}})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Targets declaration
  function(declare_targets_for_build_mode BUILD_MODE)
