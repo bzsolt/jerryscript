@@ -54,7 +54,7 @@ set(BUILD_JERRY_CORE         ON CACHE BOOL "Build jerry-core?")
 #set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
 set(BUILD_JERRY_LIBC         ON CACHE BOOL "Build jerry-libc?")
 set(BUILD_JERRY_LIBM         ON CACHE BOOL "Build jerry-libm?")
-#set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
+set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
 
 
 # Defining options
@@ -316,7 +316,7 @@ endif()
 
 # Jerry commandline tool
  if (BUILD_JERRY)
-  add_subdirectory(jerry)
+  add_subdirectory(jerry-main)
 endif()
 
  message("BUILD_MODE: ${BUILD_MODE}")

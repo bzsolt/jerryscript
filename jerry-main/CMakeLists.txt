@@ -33,3 +33,16 @@ set(JERRY_NAME    jerry)
 
     # stm32f4
      set(SOURCE_JERRY_STANDALONE_MAIN_MCU_STM32F4 main-mcu.c)
+
+# Platform-specific configuration
+ set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
+ set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
+ set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
+
+ set(JERRY_STANDALONE "jerry-standalone-main")
+
+ if(NOT ${EXTERNAL_BUILD})
+  add_executable(${JERRY_STANDALONE} ${SOURCE_JERRY_STANDALONE_MAIN})
+ endif()
+
+ target_link_libraries(${JERRY_STANDALONE} jerry-core/libjerry-core.a jerry-libc/libjerry-libc.a jerry-libm/libjerry-libm.a)
