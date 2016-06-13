@@ -45,4 +45,20 @@ set(JERRY_NAME    jerry)
   add_executable(${JERRY_STANDALONE} ${SOURCE_JERRY_STANDALONE_MAIN})
  endif()
 
- target_link_libraries(${JERRY_STANDALONE} jerry-core/libjerry-core.a jerry-libc/libjerry-libc.a jerry-libm/libjerry-libm.a)
+# Include directories
+ # Core interface
+  set(INCLUDE_CORE_INTERFACE
+      ${CMAKE_SOURCE_DIR}/jerry-core)
+
+set_property(TARGET ${JERRY_STANDALONE}
+                 PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}} ${C_FLAGS_JERRY}")
+set_property(TARGET ${JERRY_STANDALONE}
+             PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}} ${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_STATIC}")
+target_compile_definitions(${JERRY_STANDALONE} PRIVATE ${DEFINES_JERRY})
+target_include_directories(${JERRY_STANDALONE} PRIVATE ${INCLUDE_CORE_INTERFACE})
+target_include_directories(${JERRY_STANDALONE} PRIVATE ${PORT_DIR})
+target_include_directories(${JERRY_STANDALONE} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+target_include_directories(${JERRY_STANDALONE} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
+
+ target_link_libraries(${JERRY_STANDALONE} ${CMAKE_BINARY_DIR}/jerry-core/libjerry-core.a ${CMAKE_BINARY_DIR}/jerry-libc/libjerry-libc.a ${CMAKE_BINARY_DIR}/jerry-libm/libjerry-libm.a ${PREFIX_IMPORTED_LIB}libgcc)
+
