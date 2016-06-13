@@ -18,6 +18,21 @@ project (JerryCore C ASM)
 
 set(JERRY_CORE_NAME    jerry-core)
 
+# Optional features
+
+set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal") # compact_minimal feleslegesen összetett név, elég hogy minimal
+set(FEATURE_ERROR_MESSAGES OFF    CACHE BOOL   "Enable error messages?")
+set(FEATURE_DATE_SYS_CALLS OFF    CACHE BOOL   "Enable date syscalls?") # ilyen van/kell még?
+set(FEATURE_LOG            OFF    CACHE BOOL   "Enable logging?")
+set(FEATURE_VALGRIND       OFF    CACHE BOOL   "Enable Valgrind support?")
+set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
+
+ if("${PLATFORM}" STREQUAL "MCU")
+  if (("${FEATURE_VALGRIND}" STREQUAL "ON") OR ("${FEATURE_VALGRIND_FREYA}" STREQUAL "ON"))
+   message(FATAL_ERROR "This target isn't supported with Valgrind.")
+  endif()
+ endif()
+
 # Definitions
  # Get version information from git
   execute_process(COMMAND git symbolic-ref -q HEAD
@@ -176,13 +191,13 @@ set(JERRY_CORE_NAME    jerry-core)
 
 # Per-option configuration
  # Valgrind
- if("${ENABLE_VALGRIND}" STREQUAL "ON")
+ if("${FEATURE_VALGRIND}" STREQUAL "ON")
   set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_VALGRIND})
   set(INCLUDE_CORE ${INCLUDE_CORE} ${INCLUDE_THIRD_PARTY_VALGRIND})
  endif()
 
  # Valgrind Freya
- if("${ENABLE_VALGRIND_FREYA}" STREQUAL "ON")
+ if("${FEATURE_VALGRIND_FREYA}" STREQUAL "ON")
   set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_VALGRIND_FREYA})
   set(INCLUDE_CORE ${INCLUDE_CORE} ${INCLUDE_THIRD_PARTY_VALGRIND})
  endif()
@@ -193,12 +208,12 @@ set(JERRY_CORE_NAME    jerry-core)
  endif()
 
  # Log
-  if("${ENABLE_LOG}" STREQUAL "ON")
+  if("${FEATURE_LOG}" STREQUAL "ON")
    set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_LOG)
   endif()
 
  # Fill error messages for builtin error objects
-  if("${ENABLE_ERROR_MESSAGES}" STREQUAL "ON")
+  if("${FEATURE_ERROR_MESSAGES}" STREQUAL "ON")
    set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_ERROR_MESSAGES)
   endif()
 

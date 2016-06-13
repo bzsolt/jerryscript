@@ -50,27 +50,17 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
-set(BUILD_JERRY_CORE         ON CACHE BOOL "Build jerry-core?")
+set(BUILD_JERRY_CORE          ON CACHE BOOL "Build jerry-core?")
 #set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
-set(BUILD_JERRY_LIBC         ON CACHE BOOL "Build jerry-libc?")
-set(BUILD_JERRY_LIBM         ON CACHE BOOL "Build jerry-libm?")
-set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
+set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
+set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
+set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
 
+# Optional build settings
+set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
+set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
+set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
 
-# Defining options
- option(ENABLE_VALGRIND       "Enable valgrind helpers in memory allocators" OFF)
- option(ENABLE_VALGRIND_FREYA "Enable valgrind-freya helpers in memory allocators" OFF)
- option(ENABLE_LTO            "Enable LTO build" ON)
- option(ENABLE_LOG            "Enable LOG build" OFF)
- option(ENABLE_ALL_IN_ONE     "Enable ALL_IN_ONE build" OFF)
- option(ENABLE_ERROR_MESSAGES "Enable error messages for builtin error objects" OFF)
-
-# message("ENABLE_VALGRIND: ${ENABLE_VALGRIND}")
-# message("ENABLE_VALGRIND_FREYA: ${ENABLE_VALGRIND_FREYA}")
-# message("ENABLE_LTO: ${ENABLE_LTO}")
-# message("ENABLE_LOG: ${ENABLE_LOG}")
-# message("ENABLE_ALL_IN_ONE: ${ENABLE_ALL_IN_ONE}")
-# message("ENABLE_ERROR_MESSAGES: ${ENABLE_ERROR_MESSAGES}")
 
  if("${PLATFORM}" STREQUAL "LINUX")
   set(PLATFORM_EXT "LINUX")
@@ -85,9 +75,6 @@ set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "MCU")
-  if (("${ENABLE_VALGRIND}" STREQUAL "ON") OR ("${ENABLE_VALGRIND_FREYA}" STREQUAL "ON"))
-   message(FATAL_ERROR "This target isn't supported with Valgrind.")
-  endif()
 
   set(PLATFORM_EXT "MCU_${CMAKE_SYSTEM_VERSION}")
   set(EXTERNAL_BUILD FALSE)
@@ -113,7 +100,7 @@ set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
 # TODO: Rework this part!
 # Copy-paste! ××××××××××××××××××××××××××××××××××
  if(CMAKE_COMPILER_IS_GNUCC)
-  if("${ENABLE_LTO}" STREQUAL "ON")
+  if(ENABLE_LTO)
    # Use gcc-ar and gcc-ranlib to support LTO
    get_filename_component(PATH_TO_GCC ${CMAKE_C_COMPILER} REALPATH)
    get_filename_component(DIRECTORY_GCC ${PATH_TO_GCC} DIRECTORY)
@@ -182,7 +169,7 @@ set(BUILD_JERRY ON CACHE BOOL "Build jerry command line tool?")
  endif()
 
  # LTO
-  if("${ENABLE_LTO}" STREQUAL "ON")
+  if(ENABLE_LTO)
    set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -flto")
    if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
     set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -fno-fat-lto-objects")
@@ -294,9 +281,23 @@ endif()
 
 # =============================================================
 # TODO: Handle the buildmodes properly.
- set(BUILD_MODE "RELEASE")
+
+
+
+if (ENABLE_DEBUG)
+  set(BUILD_MODE "DEBUG")
+else()
+  set(BUILD_MODE "RELEASE")
+endif()
+
+# set(BUILD_MODE "RELEASE")
 # set(BUILD_MODE "DEBUG")
 # set(BUILD_MODE "UNITTESTS")
+
+
+
+
+
 
 # Jerry's libc
  if(${BUILD_JERRY_LIBC})
