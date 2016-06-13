@@ -204,58 +204,25 @@ set(JERRY_CORE_NAME    jerry-core)
 
 # Platform-specific configuration
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
-set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${BUILD_MODE}})
+ set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${BUILD_MODE}})
 
 
+#### TODO: Should integrate modifier's define to buildsystem ####
+# set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_${MODIFIER}})
+# The full-profile was hardcoded temporarily
+ set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_FULL_PROFILE})
+####  ####
 
+ add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
+ set_property(TARGET ${JERRY_CORE_NAME}
+              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}}")
+ target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
+ target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
+ target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
+ target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+ target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Targets declaration
- function(declare_targets_for_build_mode BUILD_MODE)
-  set(TARGET_NAME ${BUILD_MODE_PREFIX_${BUILD_MODE}})
-  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${BUILD_MODE}})
-
-  function(declare_target_with_modifiers ) # modifiers are passed in ARGN implicit argument
-   foreach(MODIFIER ${ARGN})
-    set(TARGET_NAME ${TARGET_NAME}${MODIFIER_SUFFIX_${MODIFIER}})
-    set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_${MODIFIER}})
-   endforeach()
-
-   add_library(${TARGET_NAME}.jerry-core STATIC ${SOURCE_CORE})
-   set_property(TARGET ${TARGET_NAME}.jerry-core
-                PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}}")
-   target_compile_definitions(${TARGET_NAME}.jerry-core PRIVATE ${DEFINES_JERRY})
-   target_include_directories(${TARGET_NAME}.jerry-core PRIVATE ${INCLUDE_CORE})
-   target_include_directories(${TARGET_NAME}.jerry-core PRIVATE ${INCLUDE_LIBM})
-   target_include_directories(${TARGET_NAME}.jerry-core SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-   target_include_directories(${TARGET_NAME}.jerry-core SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-
-   if("${BUILD_MODE}" STREQUAL "UNITTESTS")
-    target_compile_definitions(${TARGET_NAME}.jerry-core INTERFACE ${DEFINES_JERRY})
-    target_include_directories(${TARGET_NAME}.jerry-core INTERFACE ${INCLUDE_CORE})
-   endif()
-  endfunction()
-
-  foreach(MODIFIERS_LIST ${MODIFIERS_LISTS})
-   separate_arguments(MODIFIERS_LIST)
-
-   declare_target_with_modifiers(${MODIFIERS_LIST})
-  endforeach()
- endfunction()
-
- declare_targets_for_build_mode(DEBUG)
- declare_targets_for_build_mode(RELEASE)
- declare_targets_for_build_mode(UNITTESTS)
-
+ if("${BUILD_MODE}" STREQUAL "UNITTESTS")
+  target_compile_definitions(${JERRY_CORE_NAME} INTERFACE ${DEFINES_JERRY})
+  target_include_directories(${JERRY_CORE_NAME} INTERFACE ${INCLUDE_CORE})
+ endif()

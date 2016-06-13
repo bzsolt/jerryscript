@@ -50,7 +50,7 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
-#set(BUILD_JERRY_CORE         ON CACHE BOOL "Build jerry-core?")
+set(BUILD_JERRY_CORE         ON CACHE BOOL "Build jerry-core?")
 #set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
 set(BUILD_JERRY_LIBC         ON CACHE BOOL "Build jerry-libc?")
 set(BUILD_JERRY_LIBM         ON CACHE BOOL "Build jerry-libm?")
@@ -168,8 +168,6 @@ set(BUILD_JERRY_LIBM         ON CACHE BOOL "Build jerry-libm?")
   endforeach()
  endif()
 
-# ×××××××××××××××××××××××××××××××××× Copy-paste!
-
 
 # Compiler / Linker flags
  set(COMPILE_FLAGS_JERRY "-fno-builtin")
@@ -266,6 +264,33 @@ set(BUILD_JERRY_LIBM         ON CACHE BOOL "Build jerry-libm?")
 
  # Unit tests
   set(FLAGS_COMMON_UNITTESTS "-O3")
+
+# Imported libraries
+if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT CMAKE_COMPILER_IS_GNUCC))
+ # libclang_rt.osx
+  add_library(${PREFIX_IMPORTED_LIB}libclang_rt.osx STATIC IMPORTED)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=
+                  OUTPUT_VARIABLE IMPORTED_LIBCLANG_RT_LOCATION
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(IMPORTED_LIBCLANG_RT_LOCATION "${IMPORTED_LIBCLANG_RT_LOCATION}/lib/darwin/libclang_rt.osx.a")
+  set_property(TARGET ${PREFIX_IMPORTED_LIB}libclang_rt.osx
+               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBCLANG_RT_LOCATION})
+else()
+ # libgcc
+  add_library(${PREFIX_IMPORTED_LIB}libgcc STATIC IMPORTED)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=libgcc.a
+                  OUTPUT_VARIABLE IMPORTED_LIBGCC_LOCATION
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set_property(TARGET ${PREFIX_IMPORTED_LIB}libgcc
+               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBGCC_LOCATION})
+endif()
+
+# Platform-specific configuration
+ set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
+ set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
+ set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
+
+# ×××××××××××××××××××××××××××××××××× Copy-paste!
 
 # =============================================================
 # TODO: Handle the buildmodes properly.
@@ -375,50 +400,11 @@ endif()
 #  set(INCLUDE_CORE_INTERFACE
 #      ${CMAKE_SOURCE_DIR}/jerry-core)
 #
-## Sources
-# # Platform-specific
-#  # Jerry standalone
-#   # Linux
-#    set(SOURCE_JERRY_STANDALONE_MAIN_LINUX main-unix.c)
-#
-#   # Darwin
-#    set(SOURCE_JERRY_STANDALONE_MAIN_DARWIN main-unix.c)
-#
-#   # MCU
-#    # stm32f3
-#     set(SOURCE_JERRY_STANDALONE_MAIN_MCU_STM32F3 main-mcu.c)
-#
-#    # stm32f4
-#     set(SOURCE_JERRY_STANDALONE_MAIN_MCU_STM32F4 main-mcu.c)
-#
+
 # # Unit tests main modules
 #  file(GLOB SOURCE_UNIT_TEST_MAIN_MODULES tests/unit/*.c)
 #
-## Imported libraries
-#if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT CMAKE_COMPILER_IS_GNUCC))
-# # libclang_rt.osx
-#  add_library(${PREFIX_IMPORTED_LIB}libclang_rt.osx STATIC IMPORTED)
-#  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=
-#                  OUTPUT_VARIABLE IMPORTED_LIBCLANG_RT_LOCATION
-#                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-#  set(IMPORTED_LIBCLANG_RT_LOCATION "${IMPORTED_LIBCLANG_RT_LOCATION}/lib/darwin/libclang_rt.osx.a")
-#  set_property(TARGET ${PREFIX_IMPORTED_LIB}libclang_rt.osx
-#               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBCLANG_RT_LOCATION})
-#else()
-# # libgcc
-#  add_library(${PREFIX_IMPORTED_LIB}libgcc STATIC IMPORTED)
-#  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=libgcc.a
-#                  OUTPUT_VARIABLE IMPORTED_LIBGCC_LOCATION
-#                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-#  set_property(TARGET ${PREFIX_IMPORTED_LIB}libgcc
-#               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBGCC_LOCATION})
-#endif()
-#
-## Platform-specific configuration
-# set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
-# set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
-# set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
-#
+
 ## Component targets
 # # Jerry's libc
 #  if(${USE_JERRY_LIBC})
