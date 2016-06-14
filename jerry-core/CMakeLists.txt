@@ -55,15 +55,12 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
       JERRY_COMMIT_HASH="${JERRY_GIT_COMMIT}"
       JERRY_BRANCH_NAME="${JERRY_GIT_BRANCH}")
 
- # Build modes
-  # Debug
-   set(DEFINES_JERRY_DEBUG JERRY_ENABLE_PRETTY_PRINTER)
-
-  # Release
-   set(DEFINES_JERRY_RELEASE JERRY_NDEBUG)
-
-  # Unit tests
-   set(DEFINES_JERRY_UNITTESTS JERRY_ENABLE_PRETTY_PRINTER)
+ # build mode specific compile/link flags
+ if(ENABLE_DEBUG)
+   set(DEFINES_JERRY_BUILD_MODE JERRY_ENABLE_PRETTY_PRINTER)
+ else()
+  set(DEFINES_JERRY_BUILD_MODE JERRY_NDEBUG)
+ endif()
 
  # Modifiers
   # Full profile
@@ -219,7 +216,7 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
 # Platform-specific configuration
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
- set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${BUILD_MODE}})
+ set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_BUILD_MODE})
 
 
 #### TODO: Should integrate modifier's define to buildsystem ####
@@ -230,14 +227,14 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
  add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
  set_property(TARGET ${JERRY_CORE_NAME}
-              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}}")
+              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE}")
  target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 
- if("${BUILD_MODE}" STREQUAL "UNITTESTS")
+ if(ENABLE_UNITTESTS)
   target_compile_definitions(${JERRY_CORE_NAME} INTERFACE ${DEFINES_JERRY})
   target_include_directories(${JERRY_CORE_NAME} INTERFACE ${INCLUDE_CORE})
  endif()

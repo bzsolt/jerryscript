@@ -60,7 +60,11 @@ set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
 set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
 set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
 set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
+set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
 
+ if (ENABLE_UNITTESTS)
+  set (ENABLE_DEBUG ON)
+ endif()
 
  if("${PLATFORM}" STREQUAL "LINUX")
   set(PLATFORM_EXT "LINUX")
@@ -243,14 +247,14 @@ set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
    # stm32f4
     set(LINKER_FLAGS_COMMON_MCU_STM32F4 "-T${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Project/Peripheral_Examples/FLASH_Program/TrueSTUDIO/FLASH_Program/stm32_flash.ld")
 
- # Debug
-  set(FLAGS_COMMON_DEBUG "")
-
- # Release
-  set(FLAGS_COMMON_RELEASE "-Os")
-
- # Unit tests
-  set(FLAGS_COMMON_UNITTESTS "-O3")
+ # build mode specific compile/link flags
+ if(ENABLE_DEBUG)
+  if(ENABLE_UNITTESTS)
+   set(FLAGS_COMMON_BUILD_MODE "-O3")
+  endif()
+ else()
+  set(FLAGS_COMMON_BUILD_MODE "-Os")
+ endif()
 
 # Imported libraries
 if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT CMAKE_COMPILER_IS_GNUCC))
@@ -280,24 +284,6 @@ endif()
 # ×××××××××××××××××××××××××××××××××× Copy-paste!
 
 # =============================================================
-# TODO: Handle the buildmodes properly.
-
-
-
-if (ENABLE_DEBUG)
-  set(BUILD_MODE "DEBUG")
-else()
-  set(BUILD_MODE "RELEASE")
-endif()
-
-# set(BUILD_MODE "RELEASE")
-# set(BUILD_MODE "DEBUG")
-# set(BUILD_MODE "UNITTESTS")
-
-
-
-
-
 
 # Jerry's libc
  if(${BUILD_JERRY_LIBC})
@@ -319,8 +305,6 @@ endif()
  if (BUILD_JERRY)
   add_subdirectory(jerry-main)
 endif()
-
- message("BUILD_MODE: ${BUILD_MODE}")
 
 # =============================================================
 
