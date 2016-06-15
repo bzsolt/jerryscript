@@ -16,8 +16,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Jerry_LibM C)
 
-set(JERRY_LIBM_NAME    jerry-libm)
-
 # Compiler / linker flags
 # TODO: Reduce the below list of warning/error disablings as much as possible
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")

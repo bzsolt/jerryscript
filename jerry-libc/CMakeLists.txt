@@ -15,7 +15,6 @@
 
 cmake_minimum_required (VERSION 2.8.12)
 project (Jerry_LibC C ASM)
-set(JERRY_LIBC_NAME    jerry-libc)
 
 # Compiler / linker flags
 set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")

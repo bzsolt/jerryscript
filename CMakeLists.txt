@@ -283,17 +283,20 @@ endif()
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
+  set(JERRY_LIBC_NAME    jerry-libc)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib") # TODO : Linker flags
   add_subdirectory(jerry-libc)
  endif()
  
 # Jerry's core
  if(BUILD_JERRY_CORE STREQUAL "ON")
+  set(JERRY_CORE_NAME    jerry-core)
   add_subdirectory(jerry-core)
  endif()
 
 # Jerry's libm
  if (BUILD_JERRY_LIBM STREQUAL "ON")
+  set(JERRY_LIBM_NAME    jerry-libm)
   add_subdirectory(jerry-libm)
  endif()
 

@@ -37,12 +37,9 @@ set(JERRY_NAME    jerry)
 # Platform-specific configuration
  set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
- set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
-
- set(JERRY_STANDALONE "jerry-standalone-main")
 
  if(NOT ${EXTERNAL_BUILD})
-  add_executable(${JERRY_STANDALONE} ${SOURCE_JERRY_STANDALONE_MAIN})
+  add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
  endif()
 
 # Include directories
@@ -50,15 +47,14 @@ set(JERRY_NAME    jerry)
   set(INCLUDE_CORE_INTERFACE
       ${CMAKE_SOURCE_DIR}/jerry-core)
 
-set_property(TARGET ${JERRY_STANDALONE}
+set_property(TARGET ${JERRY_NAME}
                  PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE} ${C_FLAGS_JERRY}")
-set_property(TARGET ${JERRY_STANDALONE}
+set_property(TARGET ${JERRY_NAME}
              PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE} ${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_STATIC}")
-target_compile_definitions(${JERRY_STANDALONE} PRIVATE ${DEFINES_JERRY})
-target_include_directories(${JERRY_STANDALONE} PRIVATE ${INCLUDE_CORE_INTERFACE})
-target_include_directories(${JERRY_STANDALONE} PRIVATE ${PORT_DIR})
-target_include_directories(${JERRY_STANDALONE} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-target_include_directories(${JERRY_STANDALONE} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
+target_compile_definitions(${JERRY_NAME} PRIVATE ${DEFINES_JERRY})
+target_include_directories(${JERRY_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
+target_include_directories(${JERRY_NAME} PRIVATE ${PORT_DIR})
+target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 
- target_link_libraries(${JERRY_STANDALONE} ${CMAKE_BINARY_DIR}/jerry-core/libjerry-core.a ${CMAKE_BINARY_DIR}/jerry-libc/libjerry-libc.a ${CMAKE_BINARY_DIR}/jerry-libm/libjerry-libm.a ${PREFIX_IMPORTED_LIB}libgcc)
-
+target_link_libraries(${JERRY_NAME} ${JERRY_LIBC_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBM_NAME} ${PREFIX_IMPORTED_LIB}libgcc)

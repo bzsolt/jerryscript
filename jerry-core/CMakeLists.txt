@@ -16,8 +16,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (JerryCore C ASM)
 
-set(JERRY_CORE_NAME    jerry-core)
-
 # Optional features
 
 set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal") # compact_minimal feleslegesen összetett név, elég hogy minimal
