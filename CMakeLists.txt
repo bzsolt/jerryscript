@@ -37,6 +37,7 @@ project (Jerry C ASM)
    endif()
  endif()
 
+
 # Imported targets prefix
  set(PREFIX_IMPORTED_LIB imported_)
 
@@ -50,20 +51,20 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
-set(BUILD_JERRY_CORE          ON CACHE BOOL "Build jerry-core?")
-#set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
-set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
-set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
-set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
+ set(BUILD_JERRY_CORE          ON CACHE BOOL "Build jerry-core?")
+ #set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
+ set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
+ set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
+ set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
 
 # Optional build settings
-set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
-set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
-set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
-set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
+ set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
+ set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
+ set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
+ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
 
- if (ENABLE_UNITTESTS)
-  set (ENABLE_DEBUG ON)
+ if(ENABLE_UNITTESTS)
+  set(ENABLE_DEBUG ON)
  endif()
 
  if("${PLATFORM}" STREQUAL "LINUX")
@@ -79,7 +80,6 @@ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "MCU")
-
   set(PLATFORM_EXT "MCU_${CMAKE_SYSTEM_VERSION}")
   set(EXTERNAL_BUILD FALSE)
 
@@ -101,8 +101,6 @@ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
  endif()
 
-# TODO: Rework this part!
-# Copy-paste! ××××××××××××××××××××××××××××××××××
  if(CMAKE_COMPILER_IS_GNUCC)
   if(ENABLE_LTO)
    # Use gcc-ar and gcc-ranlib to support LTO
@@ -121,19 +119,17 @@ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
   set(MCU_SCRIPT_GENERATED_HEADER ${CMAKE_BINARY_DIR}/generated.h)
 
 # Should we use external libc?
- if(DEFINED COMPILER_DEFAULT_LIBC AND COMPILER_DEFAULT_LIBC STREQUAL "ON")
+ if(BUILD_JERRY_LIBC STREQUAL "OFF")
   if(DEFINED EXTERNAL_LIBC_INTERFACE AND NOT EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-    #message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (COMPILER_DEFAULT_LIBC=ON)")
+   message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (BUILD_JERRY_LIBC=OFF)")
   endif()
-
-  set(USE_JERRY_LIBC FALSE)
  elseif(NOT DEFINED EXTERNAL_LIBC_INTERFACE OR EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-  set(USE_JERRY_LIBC TRUE)
+  set(BUILD_JERRY_LIBC ON)
  else()
-  set(USE_JERRY_LIBC FALSE)
+  set(BUILD_JERRY_LIBC OFF)
 
   if(NOT EXISTS "${EXTERNAL_LIBC_INTERFACE}/stdlib.h")
-   #message(FATAL_ERROR "It seems that external libc interface '${EXTERNAL_LIBC_INTERFACE}' doesn't provide stdlib.h header")
+   message(FATAL_ERROR "It seems that external libc interface '${EXTERNAL_LIBC_INTERFACE}' doesn't provide stdlib.h header")
   endif()
 
   set(INCLUDE_LIBC_INTERFACE ${EXTERNAL_LIBC_INTERFACE})
@@ -168,7 +164,7 @@ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
  set(LINKER_FLAGS_COMMON_DARWIN "-lSystem")
 
  # Turn off linking to compiler's default libc, in case jerry-libc is used
- if(${USE_JERRY_LIBC})
+ if(BUILD_JERRY_LIBC STREQUAL "ON")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
  endif()
 
@@ -218,7 +214,7 @@ set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
   add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations pedantic)
   add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
   if(CMAKE_COMPILER_IS_GNUCC)
-    if(${USE_JERRY_LIBC})
+    if(BUILD_JERRY_LIBC STREQUAL "ON")
       add_jerry_compile_flags(-Werror)
     endif()
     add_jerry_compile_warnings(logical-op)
@@ -286,23 +282,23 @@ endif()
 # =============================================================
 
 # Jerry's libc
- if(${BUILD_JERRY_LIBC})
+ if(BUILD_JERRY_LIBC STREQUAL "ON")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib") # TODO : Linker flags
   add_subdirectory(jerry-libc)
  endif()
  
 # Jerry's core
- if(BUILD_JERRY_CORE)
+ if(BUILD_JERRY_CORE STREQUAL "ON")
   add_subdirectory(jerry-core)
  endif()
 
 # Jerry's libm
- if (BUILD_JERRY_LIBM)
+ if (BUILD_JERRY_LIBM STREQUAL "ON")
   add_subdirectory(jerry-libm)
  endif()
 
 # Jerry commandline tool
- if (BUILD_JERRY)
+ if (BUILD_JERRY STREQUAL "ON")
   add_subdirectory(jerry-main)
 endif()
 
