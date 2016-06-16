@@ -61,7 +61,7 @@ project (Jerry C ASM)
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
- set(ENABLE_UNITTESTS  OFF CACHE BOOL "Enable unit tests?")
+ set(ENABLE_UNITTESTS  ON CACHE BOOL "Enable unit tests?")
 
  if(ENABLE_UNITTESTS)
   set(ENABLE_DEBUG ON)
@@ -284,7 +284,7 @@ endif()
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
   set(JERRY_LIBC_NAME    jerry-libc)
-  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib") # TODO : Linker flags
+  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
   add_subdirectory(jerry-libc)
  endif()
  
@@ -304,6 +304,11 @@ endif()
  if (BUILD_JERRY STREQUAL "ON")
   add_subdirectory(jerry-main)
 endif()
+
+# Unittests
+ if (ENABLE_UNITTESTS)
+  add_subdirectory(tests/unit)
+ endif()
 
 # =============================================================
 
