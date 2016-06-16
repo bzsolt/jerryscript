@@ -24,8 +24,6 @@ project (Unittest C)
  # Unit tests main modules
    file(GLOB SOURCE_UNIT_TEST_MAIN_MODULES *.c)
 
-
-
 # Unit tests declaration
   if(("${PLATFORM}" STREQUAL "LINUX") OR ("${PLATFORM}" STREQUAL "DARWIN"))
    add_custom_target(unittests)
@@ -33,12 +31,6 @@ project (Unittest C)
    foreach(SOURCE_UNIT_TEST_MAIN ${SOURCE_UNIT_TEST_MAIN_MODULES})
     get_filename_component(TARGET_NAME ${SOURCE_UNIT_TEST_MAIN} NAME_WE)
     set(TARGET_NAME unit-${TARGET_NAME})
-
-#   set(CORE_TARGET_NAME unittests.jerry-core)
-#   if (${USE_JERRY_LIBC})
-#    set(LIBC_TARGET_NAME unittests.jerry-libc.${PLATFORM_L}.lib)
-#   endif ()
-#   set(LIBM_TARGET_NAME unittests.jerry-libm.lib)
 
     add_executable(${TARGET_NAME} ${SOURCE_UNIT_TEST_MAIN})
     set_property(TARGET ${TARGET_NAME}
