@@ -45,14 +45,14 @@ project (Jerry C ASM)
  set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
  set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
  set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
- set(ENABLE_UNITTESTS          OFF CACHE BOOL "Enable unit tests?")
+ set(BUILD_UNITTESTS          OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
 
- if(ENABLE_UNITTESTS)
+ if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
  endif()
 
@@ -234,7 +234,7 @@ project (Jerry C ASM)
 
  # build mode specific compile/link flags
  if(ENABLE_DEBUG)
-  if(ENABLE_UNITTESTS)
+  if(BUILD_UNITTESTS STREQUAL "ON")
    set(FLAGS_COMMON_BUILD_MODE "-O3")
   endif()
  else()
@@ -295,7 +295,7 @@ endif()
 endif()
 
 # Unittests
- if (ENABLE_UNITTESTS)
+ if (BUILD_UNITTESTS STREQUAL "ON")
   add_subdirectory(tests/unit)
  endif()
 

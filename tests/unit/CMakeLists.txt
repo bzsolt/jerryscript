@@ -40,10 +40,12 @@ project (Unittest C)
     target_include_directories(${TARGET_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
     target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
 
+    link_directories(${CMAKE_BINARY_DIR})
+
     if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT (CMAKE_COMPILER_IS_GNUCC)))
-      target_link_libraries(${TARGET_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBC_NAME} ${JERRY_LIBM_NAME} ${PREFIX_IMPORTED_LIB}libclang_rt.osx)
+      target_link_libraries(${TARGET_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBC_NAME} jerry-libm ${PREFIX_IMPORTED_LIB}libclang_rt.osx)
     else()
-      target_link_libraries(${TARGET_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBC_NAME} ${JERRY_LIBM_NAME} ${PREFIX_IMPORTED_LIB}libgcc)
+      target_link_libraries(${TARGET_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBC_NAME} jerry-libm ${PREFIX_IMPORTED_LIB}libgcc)
     endif()
 
     add_dependencies(unittests ${TARGET_NAME})

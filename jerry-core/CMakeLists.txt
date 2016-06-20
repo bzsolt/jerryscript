@@ -237,7 +237,7 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 
- if(ENABLE_UNITTESTS)
+ if(BUILD_UNITTESTS STREQUAL "ON")
   target_compile_definitions(${JERRY_CORE_NAME} INTERFACE ${DEFINES_JERRY})
   target_include_directories(${JERRY_CORE_NAME} INTERFACE ${INCLUDE_CORE})
  endif()

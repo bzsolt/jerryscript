@@ -27,7 +27,7 @@ set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-compare")
 
 # Include directories
-#set(INCLUDE_LIBM ${CMAKE_SOURCE_DIR}/jerry-libm/include)
+set(INCLUDE_LIBM ${CMAKE_SOURCE_DIR}/jerry-libm/include)
 
 # Source directories
 file(GLOB SOURCE_LIBM *.c)
@@ -38,6 +38,6 @@ set_property(TARGET ${JERRY_LIBM_NAME}
 
 target_include_directories(${JERRY_LIBM_NAME} PRIVATE ${INCLUDE_LIBM})
 
-if(ENABLE_UNITTESTS)
+if(BUILD_UNITTESTS STREQUAL "ON")
  target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
 endif()
