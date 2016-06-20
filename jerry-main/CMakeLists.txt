@@ -57,4 +57,15 @@ target_include_directories(${JERRY_NAME} PRIVATE ${PORT_DIR})
 target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
 target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 link_directories(${CMAKE_BINARY_DIR})
-target_link_libraries(${JERRY_NAME} jerry-libc jerry-core jerry-libm)
+
+set(JERRY_LIBS jerry-core)
+
+if(BUILD_JERRY_LIBM STREQUAL "ON")
+ set(JERRY_LIBS ${JERRY_LIBS} jerry-libm)
+endif()
+
+if(BUILD_JERRY_LIBC STREQUAL "ON")
+ set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
+endif()
+
+target_link_libraries(${JERRY_NAME} ${JERRY_LIBS})
