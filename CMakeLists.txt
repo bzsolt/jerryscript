@@ -27,17 +27,6 @@ project (Jerry C ASM)
   endif()
  endif()
 
- if(CMAKE_COMPILER_IS_GNUCC)
-  # Require gcc of version >= 4.7.0
-   execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
-                   OUTPUT_VARIABLE GNU_CC_VERSION
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-   if(${GNU_CC_VERSION} VERSION_LESS 4.7.0)
-    message(FATAL_ERROR "gcc compiler version 4.7.0 or higher required")
-   endif()
- endif()
-
-
 # Imported targets prefix
  set(PREFIX_IMPORTED_LIB imported_)
 
@@ -56,12 +45,12 @@ project (Jerry C ASM)
  set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
  set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
  set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
+ set(ENABLE_UNITTESTS          OFF CACHE BOOL "Enable unit tests?")
 
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
- set(ENABLE_UNITTESTS  ON CACHE BOOL "Enable unit tests?")
 
  if(ENABLE_UNITTESTS)
   set(ENABLE_DEBUG ON)
@@ -287,17 +276,17 @@ endif()
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
   add_subdirectory(jerry-libc)
  endif()
- 
-# Jerry's core
- if(BUILD_JERRY_CORE STREQUAL "ON")
-  set(JERRY_CORE_NAME    jerry-core)
-  add_subdirectory(jerry-core)
- endif()
 
 # Jerry's libm
  if (BUILD_JERRY_LIBM STREQUAL "ON")
-  set(JERRY_LIBM_NAME    jerry-libm)
+ # set(JERRY_LIBM_NAME    jerry-libm)
   add_subdirectory(jerry-libm)
+ endif()
+
+ # Jerry's core
+ if(BUILD_JERRY_CORE STREQUAL "ON")
+  set(JERRY_CORE_NAME    jerry-core)
+  add_subdirectory(jerry-core)
  endif()
 
 # Jerry commandline tool

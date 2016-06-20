@@ -56,5 +56,5 @@ target_include_directories(${JERRY_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
 target_include_directories(${JERRY_NAME} PRIVATE ${PORT_DIR})
 target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
 target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-
-target_link_libraries(${JERRY_NAME} ${JERRY_LIBC_NAME} ${JERRY_CORE_NAME} ${JERRY_LIBM_NAME} ${PREFIX_IMPORTED_LIB}libgcc)
+link_directories(${CMAKE_BINARY_DIR})
+target_link_libraries(${JERRY_NAME} jerry-libc jerry-core jerry-libm)

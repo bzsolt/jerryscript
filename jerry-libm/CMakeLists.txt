@@ -14,7 +14,9 @@
 # limitations under the License.
 
 cmake_minimum_required (VERSION 2.8.12)
-project (Jerry_LibM C)
+set(JERRY_LIBM_NAME    jerry-libm)
+
+project (${JERRY_LIBM_NAME} C)
 
 # Compiler / linker flags
 # TODO: Reduce the below list of warning/error disablings as much as possible
@@ -25,8 +27,7 @@ set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-compare")
 
 # Include directories
-set(INCLUDE_LIBM ${CMAKE_SOURCE_DIR}/jerry-libm/include)
-set(INCLUDE_LIBM ${INCLUDE_LIBM} PARENT_SCOPE)
+#set(INCLUDE_LIBM ${CMAKE_SOURCE_DIR}/jerry-libm/include)
 
 # Source directories
 file(GLOB SOURCE_LIBM *.c)
@@ -36,9 +37,6 @@ set_property(TARGET ${JERRY_LIBM_NAME}
              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBM}")
 
 target_include_directories(${JERRY_LIBM_NAME} PRIVATE ${INCLUDE_LIBM})
-
-set(SUFFIX_THIRD_PARTY_LIB ".third-party.lib")
-set(THIRD_PARTY_LIB_NAME ${JERRY_LIBM_NAME}${SUFFIX_THIRD_PARTY_LIB})
 
 if(ENABLE_UNITTESTS)
  target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
