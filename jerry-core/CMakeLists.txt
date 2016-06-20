@@ -207,6 +207,11 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
    set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_LOG)
   endif()
 
+ # _BSD_SOURCE
+  if (BUILD_JERRY_LIBC STREQUAL "OFF")
+    set (DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
+  endif()
+
  # Fill error messages for builtin error objects
   if("${FEATURE_ERROR_MESSAGES}" STREQUAL "ON")
    set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_ERROR_MESSAGES)
