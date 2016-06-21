@@ -42,11 +42,17 @@ project (Unittest C)
 
     link_directories(${CMAKE_BINARY_DIR})
 
-    if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT (CMAKE_COMPILER_IS_GNUCC)))
-      target_link_libraries(${TARGET_NAME} jerry-core jerry-libc jerry-libm ${PREFIX_IMPORTED_LIB}libclang_rt.osx)
-    else()
-      target_link_libraries(${TARGET_NAME} jerry-core jerry-libc jerry-libm ${PREFIX_IMPORTED_LIB}libgcc)
+    set(JERRY_LIBS jerry-core)
+
+    if(BUILD_JERRY_LIBM STREQUAL "ON")
+     set(JERRY_LIBS ${JERRY_LIBS} jerry-libm)
     endif()
+
+    if(BUILD_JERRY_LIBC STREQUAL "ON")
+     set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
+    endif()
+
+    target_link_libraries(${TARGET_NAME} ${JERRY_LIBS})
 
     add_dependencies(unittests ${TARGET_NAME})
    endforeach()

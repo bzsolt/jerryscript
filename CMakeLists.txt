@@ -27,9 +27,6 @@ project (Jerry C ASM)
   endif()
  endif()
 
-# Imported targets prefix
- set(PREFIX_IMPORTED_LIB imported_)
-
 # Architecture-specific compile/link flags
  foreach(FLAG ${FLAGS_COMMON_ARCH})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
@@ -240,26 +237,6 @@ project (Jerry C ASM)
  else()
   set(FLAGS_COMMON_BUILD_MODE "-Os")
  endif()
-
-# Imported libraries
-if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT CMAKE_COMPILER_IS_GNUCC))
- # libclang_rt.osx
-  add_library(${PREFIX_IMPORTED_LIB}libclang_rt.osx STATIC IMPORTED)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=
-                  OUTPUT_VARIABLE IMPORTED_LIBCLANG_RT_LOCATION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(IMPORTED_LIBCLANG_RT_LOCATION "${IMPORTED_LIBCLANG_RT_LOCATION}/lib/darwin/libclang_rt.osx.a")
-  set_property(TARGET ${PREFIX_IMPORTED_LIB}libclang_rt.osx
-               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBCLANG_RT_LOCATION})
-else()
- # libgcc
-  add_library(${PREFIX_IMPORTED_LIB}libgcc STATIC IMPORTED)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${FLAGS_COMMON_ARCH} -print-file-name=libgcc.a
-                  OUTPUT_VARIABLE IMPORTED_LIBGCC_LOCATION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set_property(TARGET ${PREFIX_IMPORTED_LIB}libgcc
-               PROPERTY IMPORTED_LOCATION ${IMPORTED_LIBGCC_LOCATION})
-endif()
 
 # Platform-specific configuration
  set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
