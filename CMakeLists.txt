@@ -50,7 +50,7 @@ project (Jerry C ASM)
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
+ set(ENABLE_ALL_IN_ONE OFF  CACHE BOOL "Enable all-in-one build?")
 
  if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
@@ -200,7 +200,7 @@ project (Jerry C ASM)
     endforeach()
   endmacro()
 
-  add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations pedantic)
+  add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations)
   add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
   if(CMAKE_COMPILER_IS_GNUCC)
     if(BUILD_JERRY_LIBC STREQUAL "ON")
@@ -223,7 +223,7 @@ project (Jerry C ASM)
   endif()
 
  # C
-  set(C_FLAGS_JERRY "-std=c99")
+  set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
  # Platform-specific
   # MCU
@@ -285,7 +285,7 @@ endif()
 
  # Jerry's core
  if(BUILD_JERRY_CORE STREQUAL "ON")
-  set(JERRY_CORE_NAME    jerry-core)
+#  set(JERRY_CORE_NAME    jerry-core)
   add_subdirectory(jerry-core)
  endif()
 

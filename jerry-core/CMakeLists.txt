@@ -14,7 +14,8 @@
 # limitations under the License.
 
 cmake_minimum_required (VERSION 2.8.12)
-project (JerryCore C ASM)
+set(JERRY_CORE_NAME    jerry-core)
+project (${JERRY_CORE_NAME} C ASM)
 
 # Optional features
 
@@ -117,17 +118,17 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
 # Include directories
  set(INCLUDE_CORE
-     ${CMAKE_SOURCE_DIR}/jerry-core
-     ${CMAKE_SOURCE_DIR}/jerry-core/lit
-     ${CMAKE_SOURCE_DIR}/jerry-core/rcs
-     ${CMAKE_SOURCE_DIR}/jerry-core/jmem
-     ${CMAKE_SOURCE_DIR}/jerry-core/vm
-     ${CMAKE_SOURCE_DIR}/jerry-core/ecma/builtin-objects
-     ${CMAKE_SOURCE_DIR}/jerry-core/ecma/base
-     ${CMAKE_SOURCE_DIR}/jerry-core/ecma/operations
-     ${CMAKE_SOURCE_DIR}/jerry-core/parser/js
-     ${CMAKE_SOURCE_DIR}/jerry-core/parser/regexp
-     ${CMAKE_SOURCE_DIR}/jerry-core/jrt)
+     ${CMAKE_CURRENT_SOURCE_DIR}
+     ${CMAKE_CURRENT_SOURCE_DIR}/lit
+     ${CMAKE_CURRENT_SOURCE_DIR}/rcs
+     ${CMAKE_CURRENT_SOURCE_DIR}/jmem
+     ${CMAKE_CURRENT_SOURCE_DIR}/vm
+     ${CMAKE_CURRENT_SOURCE_DIR}/ecma/builtin-objects
+     ${CMAKE_CURRENT_SOURCE_DIR}/ecma/base
+     ${CMAKE_CURRENT_SOURCE_DIR}/ecma/operations
+     ${CMAKE_CURRENT_SOURCE_DIR}/parser/js
+     ${CMAKE_CURRENT_SOURCE_DIR}/parser/regexp
+     ${CMAKE_CURRENT_SOURCE_DIR}/jrt)
 
  # Third-party
   # Valgrind
@@ -221,6 +222,9 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_BUILD_MODE})
 
+
+ # C
+ set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
 #### TODO: Should integrate modifier's define to buildsystem ####
 # set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_${MODIFIER}})
