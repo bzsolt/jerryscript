@@ -272,14 +272,12 @@ endif()
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
-#  set(JERRY_LIBC_NAME    jerry-libc)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
   add_subdirectory(jerry-libc)
  endif()
 
 # Jerry's libm
  if (BUILD_JERRY_LIBM STREQUAL "ON")
- # set(JERRY_LIBM_NAME    jerry-libm)
   add_subdirectory(jerry-libm)
  endif()
 
