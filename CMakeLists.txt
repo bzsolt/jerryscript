@@ -50,7 +50,7 @@ project (Jerry C ASM)
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE OFF  CACHE BOOL "Enable all-in-one build?")
+ set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
 
  if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
@@ -272,7 +272,7 @@ endif()
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
-  set(JERRY_LIBC_NAME    jerry-libc)
+#  set(JERRY_LIBC_NAME    jerry-libc)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
   add_subdirectory(jerry-libc)
  endif()
@@ -285,7 +285,6 @@ endif()
 
  # Jerry's core
  if(BUILD_JERRY_CORE STREQUAL "ON")
-#  set(JERRY_CORE_NAME    jerry-core)
   add_subdirectory(jerry-core)
  endif()
 

@@ -27,7 +27,7 @@ set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-compare")
 
 # Include directories
-set(INCLUDE_LIBM ${CMAKE_SOURCE_DIR}/jerry-libm/include)
+set(INCLUDE_LIBM ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Source directories
 file(GLOB SOURCE_LIBM *.c)

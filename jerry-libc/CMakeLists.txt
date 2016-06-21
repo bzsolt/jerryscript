@@ -14,7 +14,9 @@
 # limitations under the License.
 
 cmake_minimum_required (VERSION 2.8.12)
-project (Jerry_LibC C ASM)
+set(JERRY_LIBC_NAME    jerry-libc)
+
+project (${JERRY_LIBC_NAME} C)
 
 # Compiler / linker flags
 set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
@@ -51,9 +53,12 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
     set(DEFINES_LIBC_MCU_STM32F4 __TARGET_MCU_STM32F4)
 
 # Include directories
- set(INCLUDE_LIBC ${CMAKE_SOURCE_DIR}/jerry-libc)
- set(INCLUDE_LIBC_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
- set(INCLUDE_LIBC_INTERFACE ${INCLUDE_LIBC_INTERFACE} PARENT_SCOPE)
+ set(INCLUDE_LIBC ${CMAKE_CURRENT_SOURCE_DIR})
+ set(INCLUDE_LIBC_INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+ get_directory_property(hasParent PARENT_DIRECTORY)
+ if(hasParent)
+  set(INCLUDE_LIBC_INTERFACE ${INCLUDE_LIBC_INTERFACE} PARENT_SCOPE)
+ endif()
 
  # Third-party
   # Platform-specific
