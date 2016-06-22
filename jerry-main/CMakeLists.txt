@@ -42,6 +42,15 @@ set(JERRY_NAME    jerry)
   add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
  endif()
 
+
+ # Generage map file
+  if("${PLATFORM}" STREQUAL "DARWIN")
+   set(MAP_FILE_FLAGS "-Xlinker -map -Xlinker jerry.map")
+  else()
+   set(MAP_FILE_FLAGS "-Xlinker -Map -Xlinker jerry.map")
+  endif()
+  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${MAP_FILE_FLAGS}")
+
 # Include directories
  # Core interface
   set(INCLUDE_CORE_INTERFACE

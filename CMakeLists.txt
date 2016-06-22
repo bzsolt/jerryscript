@@ -158,14 +158,6 @@ project (Jerry C ASM)
    set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
   endif()
 
- # Generage map file
-  if("${PLATFORM}" STREQUAL "DARWIN")
-   set(MAP_FILE_FLAGS "-Xlinker -map -Xlinker jerry.map")
-  else()
-   set(MAP_FILE_FLAGS "-Xlinker -Map -Xlinker jerry.map")
-  endif()
-  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${MAP_FILE_FLAGS}")
-
  # Turn off stack protector
   set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -fno-stack-protector")
 

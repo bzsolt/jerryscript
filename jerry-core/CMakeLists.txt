@@ -224,7 +224,7 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
 
  # C
- set(C_FLAGS_JERRY "-std=c99 -pedantic")
+ set(C_FLAGS_CORE "-std=c99 -pedantic")
 
 #### TODO: Should integrate modifier's define to buildsystem ####
 # set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_${MODIFIER}})
@@ -234,7 +234,7 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
  add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
  set_property(TARGET ${JERRY_CORE_NAME}
-              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE}")
+              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_CORE} ${FLAGS_COMMON_BUILD_MODE}")
  target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
