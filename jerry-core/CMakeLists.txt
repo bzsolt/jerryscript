@@ -32,6 +32,10 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
   endif()
  endif()
 
+ if((NOT(FEATURE_PROFILE STREQUAL "full")) AND (BUILD_UNITTESTS STREQUAL "ON"))
+  message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported with BUILD_UNITTESTS=ON option")
+ endif()
+
 # Definitions
  # Get version information from git
   execute_process(COMMAND git symbolic-ref -q HEAD
