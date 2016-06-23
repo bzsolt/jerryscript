@@ -19,7 +19,7 @@ project (${JERRY_CORE_NAME} C ASM)
 
 # Optional features
 
-set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal") # compact_minimal feleslegesen összetett név, elég hogy minimal
+set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal")
 set(FEATURE_ERROR_MESSAGES OFF    CACHE BOOL   "Enable error messages?")
 set(FEATURE_DATE_SYS_CALLS OFF    CACHE BOOL   "Enable date syscalls?") # ilyen van/kell még?
 set(FEATURE_LOG            OFF    CACHE BOOL   "Enable logging?")
@@ -61,16 +61,18 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
   set(DEFINES_JERRY_BUILD_MODE JERRY_NDEBUG)
  endif()
 
- # Modifiers
+ # ES5.1 profiles
   # Full profile
-   set(DEFINES_FULL_PROFILE CONFIG_ECMA_NUMBER_TYPE=CONFIG_ECMA_NUMBER_FLOAT64)
+  if(FEATURE_PROFILE STREQUAL "full")
+   set(DEFINES_PROFILE CONFIG_ECMA_NUMBER_TYPE=CONFIG_ECMA_NUMBER_FLOAT64)
 
   # Compact profile
-   set(DEFINES_COMPACT_PROFILE
-       CONFIG_ECMA_COMPACT_PROFILE)
+  elseif(FEATURE_PROFILE STREQUAL "compact")
+   set(DEFINES_PROFILE CONFIG_ECMA_COMPACT_PROFILE)
 
   # Minimal compact profile
-   set(DEFINES_COMPACT_PROFILE_MINIMAL
+  elseif(FEATURE_PROFILE STREQUAL "minimal")
+   set(DEFINES_PROFILE
        CONFIG_ECMA_COMPACT_PROFILE
 #
 # Date and RegExp built-in objects are also disabled in non-minimal compact profile build
@@ -85,6 +87,11 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
        CONFIG_ECMA_COMPACT_PROFILE_DISABLE_ARRAY_BUILTIN
        CONFIG_ECMA_COMPACT_PROFILE_DISABLE_MATH_BUILTIN
        CONFIG_ECMA_COMPACT_PROFILE_DISABLE_JSON_BUILTIN)
+
+  else()
+   message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported")
+  endif()
+
 
  # Memory management stress-test mode
   set(DEFINES_MEM_STRESS_TEST
@@ -222,15 +229,11 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_BUILD_MODE})
 
-
  # C
  set(C_FLAGS_CORE "-std=c99 -pedantic")
 
-#### TODO: Should integrate modifier's define to buildsystem ####
-# set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_${MODIFIER}})
-# The full-profile was hardcoded temporarily
- set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_FULL_PROFILE})
-####  ####
+ # set ES5.1 profile
+ set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_PROFILE})
 
  add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
  set_property(TARGET ${JERRY_CORE_NAME}
