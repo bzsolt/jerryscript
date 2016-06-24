@@ -26,12 +26,6 @@ set(FEATURE_LOG            OFF    CACHE BOOL   "Enable logging?")
 set(FEATURE_VALGRIND       OFF    CACHE BOOL   "Enable Valgrind support?")
 set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
- if("${PLATFORM}" STREQUAL "MCU")
-  if (("${FEATURE_VALGRIND}" STREQUAL "ON") OR ("${FEATURE_VALGRIND_FREYA}" STREQUAL "ON"))
-   message(FATAL_ERROR "This target isn't supported with Valgrind.")
-  endif()
- endif()
-
  if((NOT(FEATURE_PROFILE STREQUAL "full")) AND (BUILD_UNITTESTS STREQUAL "ON"))
   message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported with BUILD_UNITTESTS=ON option")
  endif()
@@ -112,14 +106,6 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
  # Platform-specific
   # Linux
-
-  # MCU
-   # stm32f3
-    math(EXPR MEM_HEAP_AREA_SIZE_16K "16 * 1024")
-    set(DEFINES_JERRY_MCU_STM32F3 CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE_16K})
-   # stm32f4
-    math(EXPR MEM_HEAP_AREA_SIZE_16K "16 * 1024")
-    set(DEFINES_JERRY_MCU_STM32F4 CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE_16K})
 
   # External
    if(DEFINED EXTERNAL_MEM_HEAP_SIZE_KB)

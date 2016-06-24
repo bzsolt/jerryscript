@@ -65,12 +65,7 @@ project (Jerry C ASM)
   set(EXTERNAL_BUILD FALSE)
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
- elseif("${PLATFORM}" STREQUAL "MCU")
-  set(PLATFORM_EXT "MCU_${CMAKE_SYSTEM_VERSION}")
-  set(EXTERNAL_BUILD FALSE)
 
-  option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" OFF)
-  set(MCU_SCRIPT_FILE "tests/blinky.js" CACHE STRING "Script to run on MCU")
  elseif("${PLATFORM}" STREQUAL "EXTERNAL")
   set(PLATFORM_EXT "EXTERNAL")
   set(EXTERNAL_BUILD TRUE)
@@ -94,10 +89,6 @@ project (Jerry C ASM)
    set(CMAKE_RANLIB "gcc-ranlib")
   endif()
  endif()
-
-# Intermediate files
- # Script to run on MCU
-  set(MCU_SCRIPT_GENERATED_HEADER ${CMAKE_BINARY_DIR}/generated.h)
 
 # Should we use external libc?
  if(BUILD_JERRY_LIBC STREQUAL "OFF")
@@ -209,13 +200,6 @@ project (Jerry C ASM)
  # C
   set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
- # Platform-specific
-  # MCU
-   # stm32f3
-    set(LINKER_FLAGS_COMMON_MCU_STM32F3 "-T${CMAKE_SOURCE_DIR}/third-party/STM32F3-Discovery_FW_V1.1.0/Project/Peripheral_Examples/FLASH_Program/TrueSTUDIO/FLASH_Program/STM32_FLASH.ld")
-   # stm32f4
-    set(LINKER_FLAGS_COMMON_MCU_STM32F4 "-T${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Project/Peripheral_Examples/FLASH_Program/TrueSTUDIO/FLASH_Program/stm32_flash.ld")
-
  # build mode specific compile/link flags
  if(ENABLE_DEBUG)
   if(BUILD_UNITTESTS STREQUAL "ON")
@@ -228,10 +212,6 @@ project (Jerry C ASM)
 # Platform-specific configuration
  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
  set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
-
-# ×××××××××××××××××××××××××××××××××× Copy-paste!
-
-# =============================================================
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
@@ -258,243 +238,3 @@ endif()
  if (BUILD_UNITTESTS STREQUAL "ON")
   add_subdirectory(tests/unit)
  endif()
-
-# =============================================================
-
-#
-## Build modes
-# # Debug
-#  set(BUILD_MODE_PREFIX_DEBUG debug)
-#
-# # Release
-#  set(BUILD_MODE_PREFIX_RELEASE release)
-#
-# # Unit tests
-#  set(BUILD_MODE_PREFIX_UNITTESTS unittests)
-#
-## Modifiers
-# # Profiles
-#  # Full profile (default, so - no suffix)
-#   set(MODIFIER_SUFFIX_FULL_PROFILE "")
-#
-#  # Compact profile
-#   set(MODIFIER_SUFFIX_COMPACT_PROFILE -cp)
-#
-#  # Minimal compact profile
-#   set(MODIFIER_SUFFIX_COMPACT_PROFILE_MINIMAL -cp_minimal)
-#
-# # Memory statistics
-#  set(MODIFIER_SUFFIX_MEMORY_STATISTICS -mem_stats)
-#
-# # Memory management stress-test mode
-#  set(MODIFIER_SUFFIX_MEM_STRESS_TEST -mem_stress_test)
-#
-## Modifier lists
-# # Linux
-#  set(MODIFIERS_LISTS_LINUX
-#     "FULL_PROFILE"
-#     "FULL_PROFILE MEM_STRESS_TEST"
-#     "COMPACT_PROFILE"
-#     "COMPACT_PROFILE_MINIMAL"
-#     "FULL_PROFILE MEMORY_STATISTICS"
-#     "COMPACT_PROFILE_MINIMAL MEMORY_STATISTICS")
-#
-# # Darwin
-#  set(MODIFIERS_LISTS_DARWIN
-#     "FULL_PROFILE"
-#     "FULL_PROFILE MEM_STRESS_TEST"
-#     "COMPACT_PROFILE"
-#     "COMPACT_PROFILE_MINIMAL"
-#     "FULL_PROFILE MEMORY_STATISTICS"
-#     "COMPACT_PROFILE_MINIMAL MEMORY_STATISTICS")
-#
-# # MCU
-#  # stm32f3
-#   set(MODIFIERS_LISTS_MCU_STM32F3
-#      "FULL_PROFILE"
-#      "COMPACT_PROFILE"
-#      "COMPACT_PROFILE_MINIMAL")
-#
-#  # stm32f4
-#   set(MODIFIERS_LISTS_MCU_STM32F4
-#      "FULL_PROFILE"
-#      "COMPACT_PROFILE"
-#      "COMPACT_PROFILE_MINIMAL")
-#
-# # External
-#   set(MODIFIERS_LISTS_EXTERNAL
-#     "FULL_PROFILE"
-#     "COMPACT_PROFILE"
-#     "COMPACT_PROFILE_MINIMAL"
-#     "FULL_PROFILE MEMORY_STATISTICS"
-#     "COMPACT_PROFILE MEMORY_STATISTICS")
-#
-
-
-
-#
-## Include directories
-# # Core interface
-#  set(INCLUDE_CORE_INTERFACE
-#      ${CMAKE_SOURCE_DIR}/jerry-core)
-#
-
-# # Unit tests main modules
-#  file(GLOB SOURCE_UNIT_TEST_MAIN_MODULES tests/unit/*.c)
-#
-
-## Component targets
-# # Jerry's libc
-#  if(${USE_JERRY_LIBC})
-#   add_subdirectory(jerry-libc)
-#  endif()
-#
-# # Jerry's libm
-#  add_subdirectory(jerry-libm)
-#
-# # Jerry's Core
-#  add_subdirectory(jerry-core)
-#
-## Targets declaration
-# string(TOLOWER "${PLATFORM_EXT}" PLATFORM_L)
-#
-# function(declare_targets_for_build_mode BUILD_MODE)
-#  set(TARGET_NAME ${BUILD_MODE_PREFIX_${BUILD_MODE}}.${PLATFORM_L})
-#  if (${USE_JERRY_LIBC})
-#    set(LIBC_TARGET_NAME ${BUILD_MODE_PREFIX_${BUILD_MODE}}.jerry-libc.${PLATFORM_L}.lib)
-#  endif()
-#
-#  function(declare_target_with_modifiers) # modifiers are passed in ARGN implicit argument
-#   set(CORE_TARGET_NAME ${BUILD_MODE_PREFIX_${BUILD_MODE}})
-#   foreach(MODIFIER ${ARGN})
-#    set(TARGET_NAME ${TARGET_NAME}${MODIFIER_SUFFIX_${MODIFIER}})
-#
-#    set(CORE_TARGET_NAME ${CORE_TARGET_NAME}${MODIFIER_SUFFIX_${MODIFIER}})
-#   endforeach()
-#   set(LIBM_TARGET_NAME ${CORE_TARGET_NAME}.jerry-libm.lib)
-#   set(CORE_TARGET_NAME ${CORE_TARGET_NAME}.jerry-core)
-#
-#   set(DEFINES_JERRY )
-#
-#   if(NOT ${EXTERNAL_BUILD})
-#    add_executable(${TARGET_NAME} ${SOURCE_JERRY_STANDALONE_MAIN})
-#
-#    if("${PLATFORM}" STREQUAL "MCU")
-#     set(MCU_SCRIPT_GENERATED_HEADER ${MCU_SCRIPT_GENERATED_HEADER}.${TARGET_NAME})
-#     add_custom_command(OUTPUT ${MCU_SCRIPT_GENERATED_HEADER}
-                        #COMMAND ${CMAKE_SOURCE_DIR}/tools/generator.sh "${CMAKE_SOURCE_DIR}/${MCU_SCRIPT_FILE}" ${MCU_SCRIPT_GENERATED_HEADER}
-#                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-#     add_custom_target(mcu_header_with_script_to_run.${TARGET_NAME} DEPENDS ${MCU_SCRIPT_GENERATED_HEADER})
-#     set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_MCU_SCRIPT_HEADER="${MCU_SCRIPT_GENERATED_HEADER}")
-#    elseif(("${PLATFORM}" STREQUAL "LINUX") OR ("${PLATFORM}" STREQUAL "DARWIN"))
-#     if("${ENABLE_LOG}" STREQUAL "ON")
-#      set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_LOG)
-#     endif()
-#    endif()
-#
-#    set_property(TARGET ${TARGET_NAME}
-#                 PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}} ${C_FLAGS_JERRY}")
-#    set_property(TARGET ${TARGET_NAME}
-                 #PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}} ${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_STATIC}")
-#    target_compile_definitions(${TARGET_NAME} PRIVATE ${DEFINES_JERRY})
-#    target_include_directories(${TARGET_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
-#    target_include_directories(${TARGET_NAME} PRIVATE ${PORT_DIR})
-#    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-#    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-#    if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT (CMAKE_COMPILER_IS_GNUCC)))
-#     target_link_libraries(${TARGET_NAME} ${CORE_TARGET_NAME} ${LIBC_TARGET_NAME}
-#                           ${LIBM_TARGET_NAME} ${PREFIX_IMPORTED_LIB}libclang_rt.osx)
-#    else()
-#     target_link_libraries(${TARGET_NAME} ${CORE_TARGET_NAME} ${LIBC_TARGET_NAME}
-#                           ${LIBM_TARGET_NAME} ${PREFIX_IMPORTED_LIB}libgcc)
-#    endif()
-#
-#    if("${PLATFORM}" STREQUAL "MCU")
-#     add_dependencies(${TARGET_NAME} mcu_header_with_script_to_run.${TARGET_NAME})
-#     add_custom_target(${TARGET_NAME}.bin
-#                       COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> $<TARGET_FILE:${TARGET_NAME}>.bin
-#                       DEPENDS ${TARGET_NAME})
-#     add_custom_target(${TARGET_NAME}.flash
-#                       COMMAND st-flash write $<TARGET_FILE:${TARGET_NAME}>.bin 0x08000000
-#                       DEPENDS ${TARGET_NAME}.bin)
-#    endif()
-#
-#    if("${BUILD_MODE}" STREQUAL "RELEASE")
-#     if(${STRIP_RELEASE_BINARY} STREQUAL "ON")
-#      add_custom_command(TARGET ${TARGET_NAME}
-#                         POST_BUILD
-#                         COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${TARGET_NAME}>)
-#     endif()
-#    endif()
-#   else()
-#    add_custom_target(${TARGET_NAME} ALL)
-#
-#    add_custom_command(TARGET ${TARGET_NAME}
-#                       POST_BUILD
-#                       COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${TARGET_NAME}
-#                       COMMAND echo $<TARGET_FILE:${LIBM_TARGET_NAME}> > ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list
-#                       COMMAND echo $<TARGET_FILE:${CORE_TARGET_NAME}> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
-#
-#    if(DEFINED EXTERNAL_BUILD_ENTRY_FILE)
-#     add_library(${TARGET_NAME}-entry STATIC ${EXTERNAL_BUILD_ENTRY_FILE})
-#     set_property(TARGET ${TARGET_NAME}-entry
-#                  PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_${BUILD_MODE}}")
-#     target_compile_definitions(${TARGET_NAME}-entry PRIVATE ${DEFINES_JERRY})
-#     target_include_directories(${TARGET_NAME}-entry PRIVATE ${INCLUDE_CORE_INTERFACE})
-#     target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
-#     target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-#     target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-#     add_dependencies(${TARGET_NAME} ${TARGET_NAME}-entry)
-#    endif()
-#
-#    if(${USE_JERRY_LIBC})
-#     add_custom_command(TARGET ${TARGET_NAME}
-#                        POST_BUILD
-#                        COMMAND echo $<TARGET_FILE:${LIBC_TARGET_NAME}> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
-#    endif()
-#   endif()
-#  endfunction()
-#
-#  foreach(MODIFIERS_LIST ${MODIFIERS_LISTS})
-#   separate_arguments(MODIFIERS_LIST)
-#
-#   declare_target_with_modifiers(${MODIFIERS_LIST})
-#  endforeach()
-# endfunction()
-#
-# declare_targets_for_build_mode(DEBUG)
-# declare_targets_for_build_mode(RELEASE)
-#
-# # Unit tests declaration
-#  if(("${PLATFORM}" STREQUAL "LINUX") OR ("${PLATFORM}" STREQUAL "DARWIN"))
-#   add_custom_target(unittests)
-#
-#   foreach(SOURCE_UNIT_TEST_MAIN ${SOURCE_UNIT_TEST_MAIN_MODULES})
-#    get_filename_component(TARGET_NAME ${SOURCE_UNIT_TEST_MAIN} NAME_WE)
-#    set(TARGET_NAME unit-${TARGET_NAME})
-#
-#    set(CORE_TARGET_NAME unittests.jerry-core)
-#    if (${USE_JERRY_LIBC})
-#     set(LIBC_TARGET_NAME unittests.jerry-libc.${PLATFORM_L}.lib)
-#    endif ()
-#    set(LIBM_TARGET_NAME unittests.jerry-libm.lib)
-#
-#    add_executable(${TARGET_NAME} ${SOURCE_UNIT_TEST_MAIN})
-#    set_property(TARGET ${TARGET_NAME}
-#                 PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY} ${FLAGS_COMMON_UNITTESTS}")
-#    set_property(TARGET ${TARGET_NAME}
-#                 PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_UNITTESTS} ${LINKER_FLAGS_COMMON}")
-#    target_include_directories(${TARGET_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
-#    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-#
-#    if(("${PLATFORM}" STREQUAL "DARWIN") AND (NOT (CMAKE_COMPILER_IS_GNUCC)))
-#      target_link_libraries(${TARGET_NAME} ${CORE_TARGET_NAME} ${LIBC_TARGET_NAME} ${LIBM_TARGET_NAME}
-#                            ${PREFIX_IMPORTED_LIB}libclang_rt.osx)
-#    else()
-#      target_link_libraries(${TARGET_NAME} ${CORE_TARGET_NAME} ${LIBC_TARGET_NAME} ${LIBM_TARGET_NAME}
-#                            ${PREFIX_IMPORTED_LIB}libgcc)
-#    endif()
-#
-#    add_dependencies(unittests ${TARGET_NAME})
-#   endforeach()
-#  endif()

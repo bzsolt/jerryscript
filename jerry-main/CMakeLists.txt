@@ -27,13 +27,6 @@ set(JERRY_NAME    jerry)
    # Darwin
     set(SOURCE_JERRY_STANDALONE_MAIN_DARWIN main-unix.c)
 
-   # MCU
-    # stm32f3
-     set(SOURCE_JERRY_STANDALONE_MAIN_MCU_STM32F3 main-mcu.c)
-
-    # stm32f4
-     set(SOURCE_JERRY_STANDALONE_MAIN_MCU_STM32F4 main-mcu.c)
-
 # Platform-specific configuration
  set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")

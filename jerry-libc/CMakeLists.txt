@@ -45,12 +45,7 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
    set(DEFINES_LIBC_LINUX __TARGET_HOST)
   # Darwin
    set(DEFINES_LIBC_DARWIN __TARGET_HOST)
-  # MCU
-   set(DEFINES_LIBC_MCU __TARGET_MCU)
-   # stm32f3
-    set(DEFINES_LIBC_MCU_STM32F3 __TARGET_MCU_STM32F3)
-   # stm32f4
-    set(DEFINES_LIBC_MCU_STM32F4 __TARGET_MCU_STM32F4)
+
 
 # Include directories
  set(INCLUDE_LIBC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -68,16 +63,6 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
    # Darwin
      set(INCLUDE_THIRD_PARTY_DARWIN )
 
-   # MCU
-    # STM32F3
-     set(INCLUDE_THIRD_PARTY_MCU_STM32F3
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F3-Discovery_FW_V1.1.0/Libraries/CMSIS/Device/ST/STM32F30x/Include
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F3-Discovery_FW_V1.1.0/Libraries/CMSIS/Include)
-    # STM32F4
-     set(INCLUDE_THIRD_PARTY_MCU_STM32F4
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Libraries/CMSIS/ST/STM32F4xx/Include
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Libraries/CMSIS/Include)
-
 # Sources
  file(GLOB SOURCE_LIBC *.c)
 
@@ -87,24 +72,6 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
 
   # Darwin
    file(GLOB SOURCE_LIBC_DARWIN target/posix/*.c target/posix/*.S)
-
-  # MCU
-   # stm32f3
-    file(GLOB SOURCE_LIBC_MCU_STM32F3 target/mcu-stubs/*.c target/mcu-stubs/*.S)
-   # stm32f4
-    file(GLOB SOURCE_LIBC_MCU_STM32F4 target/mcu-stubs/*.c target/mcu-stubs/*.S)
-
- # Third-party
-  # Platform-specific
-   # MCU
-    # stm32f3
-     set(SOURCE_THIRD_PARTY_MCU_STM32F3
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F3-Discovery_FW_V1.1.0/Libraries/CMSIS/Device/ST/STM32F30x/Source/Templates/system_stm32f30x.c
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F3-Discovery_FW_V1.1.0/Libraries/CMSIS/Device/ST/STM32F30x/Source/Templates/gcc_ride7/startup_stm32f30x.s)
-    # stm32f4
-     set(SOURCE_THIRD_PARTY_MCU_STM32F4
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Libraries/CMSIS/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-         ${CMAKE_SOURCE_DIR}/third-party/STM32F4-Discovery_FW_V1.1.0/Libraries/CMSIS/ST/STM32F4xx/Source/Templates/gcc_ride7/startup_stm32f4xx.s)
 
 # Architecture-specific configuration
  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
@@ -131,16 +98,3 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
  target_compile_definitions(${JERRY_LIBC_NAME} PRIVATE ${DEFINES_LIBC})
  target_include_directories(${JERRY_LIBC_NAME} PRIVATE ${INCLUDE_LIBC})
  target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-
- # Third-party MCU library
-  if(DEFINED SOURCE_THIRD_PARTY_${PLATFORM_EXT})
-   set(SUFFIX_THIRD_PARTY_LIB ".third-party.lib")
-   set(THIRD_PARTY_MCU_LIB ${JERRY_LIBC_NAME}${SUFFIX_THIRD_PARTY_LIB})
-
-   add_library(${THIRD_PARTY_MCU_LIB} STATIC ${SOURCE_THIRD_PARTY_${PLATFORM_EXT}})
-   set_property(TARGET ${THIRD_PARTY_MCU_LIB}
-                PROPERTY COMPILE_FLAGS "${FLAGS_COMMON_BUILD_MODE}")
-   target_include_directories(${THIRD_PARTY_MCU_LIB} PRIVATE ${INCLUDE_THIRD_PARTY_${PLATFORM_EXT}})
-   target_include_directories(${THIRD_PARTY_MCU_LIB} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-   target_link_libraries(${JERRY_LIBC_NAME} ${THIRD_PARTY_MCU_LIB})
-  endif()
