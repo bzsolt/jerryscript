@@ -49,6 +49,11 @@ set(JERRY_NAME    jerry)
   set(INCLUDE_CORE_INTERFACE
       ${CMAKE_SOURCE_DIR}/jerry-core)
 
+ # LIBC interface
+ if(USE_JERRY_LIBC)
+  set(INCLUDE_LIBC_INTERFACE ${INCLUDE_JERRY_LIBC_INTERFACE})
+ endif()
+
 set_property(TARGET ${JERRY_NAME}
                  PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE} ${C_FLAGS_JERRY}")
 set_property(TARGET ${JERRY_NAME}
@@ -68,7 +73,7 @@ else ()
  set(REQUIRED_LIBS m)
 endif()
 
-if(BUILD_JERRY_LIBC STREQUAL "ON")
+if(USE_JERRY_LIBC)
  set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
 endif()
 

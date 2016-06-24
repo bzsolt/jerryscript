@@ -59,8 +59,8 @@ project (Jerry C ASM)
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "DARWIN")
-  option(ENABLE_LTO            "Enable LTO build" OFF)
-  option(ENABLE_ALL_IN_ONE     "Enable ALL_IN_ONE build" ON)
+  set(ENABLE_LTO        OFF  CACHE BOOL "Enable LTO build?")
+  set(ENABLE_ALL_IN_ONE ON   CACHE BOOL "Enable all-in-one build?")
   set(PLATFORM_EXT "DARWIN")
   set(EXTERNAL_BUILD FALSE)
 
@@ -91,14 +91,21 @@ project (Jerry C ASM)
  endif()
 
 # Should we use external libc?
- if(BUILD_JERRY_LIBC STREQUAL "OFF")
+ if(DEFINED COMPILER_DEFAULT_LIBC AND COMPILER_DEFAULT_LIBC STREQUAL "ON")
   if(DEFINED EXTERNAL_LIBC_INTERFACE AND NOT EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-   message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (BUILD_JERRY_LIBC=OFF)")
+    message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (COMPILER_DEFAULT_LIBC=ON)")
   endif()
+  set(USE_JERRY_LIBC FALSE)
  elseif(NOT DEFINED EXTERNAL_LIBC_INTERFACE OR EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-  set(BUILD_JERRY_LIBC ON)
+  if(BUILD_JERRY_LIBC STREQUAL "OFF")
+   find_library(LIBC_PATH jerry-libc) #TODO: megadni rendesen a patht
+   if(NOT LIBC_PATH)
+    message(FATAL_ERROR "libc library not found")
+   endif()
+  endif()
+  set(USE_JERRY_LIBC TRUE)
  else()
-  set(BUILD_JERRY_LIBC OFF)
+  set(USE_JERRY_LIBC FALSE)
 
   if(NOT EXISTS "${EXTERNAL_LIBC_INTERFACE}/stdlib.h")
    message(FATAL_ERROR "It seems that external libc interface '${EXTERNAL_LIBC_INTERFACE}' doesn't provide stdlib.h header")
@@ -136,7 +143,7 @@ project (Jerry C ASM)
  set(LINKER_FLAGS_COMMON_DARWIN "-lSystem")
 
  # Turn off linking to compiler's default libc, in case jerry-libc is used
- if(BUILD_JERRY_LIBC STREQUAL "ON")
+ if(USE_JERRY_LIBC)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
  endif()
 
@@ -178,7 +185,7 @@ project (Jerry C ASM)
   add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations)
   add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
   if(CMAKE_COMPILER_IS_GNUCC)
-    if(BUILD_JERRY_LIBC STREQUAL "ON")
+    if(USE_JERRY_LIBC)
       add_jerry_compile_flags(-Werror)
     endif()
     add_jerry_compile_warnings(logical-op)
@@ -215,7 +222,6 @@ project (Jerry C ASM)
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")
-  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
   add_subdirectory(jerry-libc)
  endif()
 

@@ -21,7 +21,6 @@ project (${JERRY_CORE_NAME} C ASM)
 
 set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal")
 set(FEATURE_ERROR_MESSAGES OFF    CACHE BOOL   "Enable error messages?")
-set(FEATURE_DATE_SYS_CALLS OFF    CACHE BOOL   "Enable date syscalls?") # ilyen van/kell még?
 set(FEATURE_LOG            OFF    CACHE BOOL   "Enable logging?")
 set(FEATURE_VALGRIND       OFF    CACHE BOOL   "Enable Valgrind support?")
 set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
@@ -205,8 +204,13 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
    set(DEFINES_JERRY ${DEFINES_JERRY} JERRY_ENABLE_LOG)
   endif()
 
+ # USE_JERRY_LIBC
+ if(USE_JERRY_LIBC)
+  set(INCLUDE_LIBC_INTERFACE ${INCLUDE_JERRY_LIBC_INTERFACE})
+ endif()
+
  # _BSD_SOURCE
-  if (BUILD_JERRY_LIBC STREQUAL "OFF")
+  if (COMPILER_DEFAULT_LIBC STREQUAL "ON")
    set (DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
   endif()
 
@@ -217,6 +221,7 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
 
 # Platform-specific configuration
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_${PLATFORM_EXT}})
+
  set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_BUILD_MODE})
 
  # C
