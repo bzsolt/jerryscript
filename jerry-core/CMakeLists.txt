@@ -19,11 +19,13 @@ project (${JERRY_CORE_NAME} C ASM)
 
 # Optional features
 
-set(FEATURE_PROFILE        "full" CACHE STRING "ES5.1 profile: full, compact, minimal")
-set(FEATURE_ERROR_MESSAGES OFF    CACHE BOOL   "Enable error messages?")
-set(FEATURE_LOG            OFF    CACHE BOOL   "Enable logging?")
-set(FEATURE_VALGRIND       OFF    CACHE BOOL   "Enable Valgrind support?")
-set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
+ set(FEATURE_PROFILE         "full" CACHE STRING "ES5.1 profile: full, compact, minimal")
+ set(FEATURE_ERROR_MESSAGES  OFF    CACHE BOOL   "Enable error messages?")
+ set(FEATURE_LOG             OFF    CACHE BOOL   "Enable logging?")
+ set(FEATURE_VALGRIND        OFF    CACHE BOOL   "Enable Valgrind support?")
+ set(FEATURE_VALGRIND_FREYA  OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
+ set(FEATURE_MEM_STRESS_TEST OFF    CACHE BOOL   "Enable mem-stress test?")
+ set(FEATURE_MEM_STATS       OFF    CACHE BOOL   "Enable memory-statistics?")
 
  if((NOT(FEATURE_PROFILE STREQUAL "full")) AND (BUILD_UNITTESTS STREQUAL "ON"))
   message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported with BUILD_UNITTESTS=ON option")
@@ -58,6 +60,10 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
   set(DEFINES_JERRY_BUILD_MODE JERRY_NDEBUG)
  endif()
 
+ # Memory management stress-test mode
+ set(DEFINES_MEM_STRESS_TEST
+     JMEM_GC_BEFORE_EACH_ALLOC)
+
  # ES5.1 profiles
   # Full profile
   if(FEATURE_PROFILE STREQUAL "full")
@@ -88,11 +94,6 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
   else()
    message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported")
   endif()
-
-
- # Memory management stress-test mode
-  set(DEFINES_MEM_STRESS_TEST
-      JMEM_GC_BEFORE_EACH_ALLOC)
 
  # Memory statistics
   set(DEFINES_MEMORY_STATISTICS JMEM_STATS)
@@ -182,6 +183,16 @@ set(FEATURE_VALGRIND_FREYA OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
  endif()
 
 # Per-option configuration
+  # Memory management stress-test mode
+  if("${FEATURE_MEM_STRESS_TEST}" STREQUAL "ON")
+    set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_MEM_STRESS_TEST})
+  endif()
+
+  # Memory statistics
+  if("${FEATURE_MEM_STATS}" STREQUAL "ON")
+   set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_MEMORY_STATISTICS})
+  endif()
+
  # Valgrind
  if("${FEATURE_VALGRIND}" STREQUAL "ON")
   set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_JERRY_VALGRIND})
