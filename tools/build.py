@@ -59,11 +59,13 @@ def configure_build(arguments):
         makedirs(BUILD_DIR)
 
     build_options = generate_build_options(arguments)
+    cmakeCmd = ['cmake', '-B' + BUILD_DIR, '-H' + PROJECT_DIR]
+    cmakeCmd.extend(build_options)
 
-    return subprocess.call(['cmake', '-B' + BUILD_DIR, '-H' + PROJECT_DIR] + build_options)
+    return subprocess.call(cmakeCmd)
 
 def build_jerry(arguments):
-    return subprocess.call(['make', '-s', '-C', BUILD_DIR])
+    return subprocess.call(['make', '--no-print-directory', '-C', BUILD_DIR])
 
 def print_result(ret):
     print('=' * 30)
