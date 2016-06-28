@@ -49,6 +49,19 @@ project (Jerry C ASM)
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
 
+# Setup directories
+ # Project binary dir
+ set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
+
+ # Library output directory
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+
+ # Executable output directory
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
+
+ # Archive targets output Directory
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+
  if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
  endif()
@@ -96,22 +109,20 @@ project (Jerry C ASM)
     message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (COMPILER_DEFAULT_LIBC=ON)")
   endif()
   set(USE_JERRY_LIBC FALSE)
+  set(USE_EXTERNAL_LIBC FALSE)
  elseif(NOT DEFINED EXTERNAL_LIBC_INTERFACE OR EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-  if(BUILD_JERRY_LIBC STREQUAL "OFF")
-   find_library(LIBC_PATH jerry-libc) #TODO: megadni rendesen a patht
-   if(NOT LIBC_PATH)
-    message(FATAL_ERROR "libc library not found")
-   endif()
-  endif()
   set(USE_JERRY_LIBC TRUE)
+  set(USE_EXTERNAL_LIBC FALSE)
  else()
   set(USE_JERRY_LIBC FALSE)
 
   if(NOT EXISTS "${EXTERNAL_LIBC_INTERFACE}/stdlib.h")
    message(FATAL_ERROR "It seems that external libc interface '${EXTERNAL_LIBC_INTERFACE}' doesn't provide stdlib.h header")
+   set(USE_EXTERNAL_LIBC FALSE)
   endif()
 
   set(INCLUDE_LIBC_INTERFACE ${EXTERNAL_LIBC_INTERFACE})
+  set(USE_EXTERNAL_LIBC TRUE)
  endif()
 
  # Should we use external port?
@@ -143,7 +154,7 @@ project (Jerry C ASM)
  set(LINKER_FLAGS_COMMON_DARWIN "-lSystem")
 
  # Turn off linking to compiler's default libc, in case jerry-libc is used
- if(USE_JERRY_LIBC)
+ if(USE_JERRY_LIBC OR USE_EXTERNAL_LIBC)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
  endif()
 
