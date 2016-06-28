@@ -29,10 +29,13 @@ PROJECT_DIR = join_path([SCRIPT_PATH, '../'])
 BUILD_DIR = join_path([PROJECT_DIR, 'tmp/'])
 
 def add_build_args(parser):
-    parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true', dest='verbose')
-    parser.add_argument('--all-in-one', help='All-in-one build', action='store_true', dest='build_all_in_one')
-    parser.add_argument('--debug', help='Debug build', action='store_true', dest='build_debug')
-    # parser.add_argument('--not stripped')
+    parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true', default=False)
+    parser.add_argument('--all-in-one', choices=['on', 'off'], default='off', help='All-in-one build')
+    parser.add_argument('--debug', choices=['on', 'off'], default='off', help='Debug build')
+    parser.add_argument('--lto', choices=['on', 'off'], default='on', help='Enable link-time optimizations')
+    # parser.add_argument('--cmake-params', action='append', help='Add custom arguments to CMake')
+
+    # TODO: parser.add_argument('--not stripped')
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -46,11 +49,9 @@ def generate_build_options(arguments):
     if arguments.verbose:
         build_options.append('-DCMAKE_VERBOSE_MAKEFILE=ON')
 
-    if arguments.build_all_in_one:
-        build_options.append('-DENABLE_ALL_IN_ONE=ON')
-
-    if arguments.build_debug:
-        build_options.append('-DENABLE_DEBUG=ON')
+    build_options.append('-DENABLE_ALL_IN_ONE=%s' % arguments.all_in_one.upper())
+    build_options.append('-DENABLE_DEBUG=%s' % arguments.debug.upper())
+    build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
 
     return build_options
 
@@ -59,6 +60,7 @@ def configure_build(arguments):
         makedirs(BUILD_DIR)
 
     build_options = generate_build_options(arguments)
+
     cmakeCmd = ['cmake', '-B' + BUILD_DIR, '-H' + PROJECT_DIR]
     cmakeCmd.extend(build_options)
 
