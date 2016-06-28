@@ -244,3 +244,34 @@ endif()
  if (BUILD_UNITTESTS STREQUAL "ON")
   add_subdirectory(tests/unit)
  endif()
+
+# External
+if(${EXTERNAL_BUILD})
+  set(TARGET_NAME external)
+  add_custom_target(${TARGET_NAME} ALL)
+
+  add_custom_command(TARGET ${TARGET_NAME}
+                     POST_BUILD
+                     COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${TARGET_NAME}
+                     COMMAND echo $<TARGET_FILE:jerry-libm> > ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list
+                     COMMAND echo $<TARGET_FILE:jerry-core> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
+
+  if(DEFINED EXTERNAL_BUILD_ENTRY_FILE)
+   add_library(${TARGET_NAME}-entry STATIC ${EXTERNAL_BUILD_ENTRY_FILE})
+   set_property(TARGET ${TARGET_NAME}-entry
+                PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE}}")
+   target_compile_definitions(${TARGET_NAME}-entry PRIVATE ${DEFINES_JERRY})
+   target_include_directories(${TARGET_NAME}-entry PRIVATE ${INCLUDE_CORE_INTERFACE})
+   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
+   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
+   add_dependencies(${TARGET_NAME} ${TARGET_NAME}-entry)
+  endif()
+
+  if(${USE_JERRY_LIBC})
+   add_custom_command(TARGET ${TARGET_NAME}
+                      POST_BUILD
+                      COMMAND echo $<TARGET_FILE:jerry-libc> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
+  endif()
+
+endif()

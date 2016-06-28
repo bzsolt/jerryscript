@@ -80,32 +80,4 @@ if(NOT ${EXTERNAL_BUILD})
   endif()
 
   target_link_libraries(${JERRY_NAME} ${JERRY_LIBS} ${REQUIRED_LIBS})
-
-else()
-  add_custom_target(${TARGET_NAME} ALL)
-
-  add_custom_command(TARGET ${JERRY_NAME}
-                     POST_BUILD
-                     COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${JERRY_NAME}
-                     COMMAND echo $<TARGET_FILE:${jerry-libm}> > ${CMAKE_BINARY_DIR}/${JERRY_NAME}/list
-                     COMMAND echo $<TARGET_FILE:${jerry-core}> >> ${CMAKE_BINARY_DIR}/${JERRY_NAME}/list)
-
-  if(DEFINED EXTERNAL_BUILD_ENTRY_FILE)
-   add_library(${JERRY_NAME}-entry STATIC ${EXTERNAL_BUILD_ENTRY_FILE})
-   set_property(TARGET ${JERRY_NAME}-entry
-                PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE}")
-   target_compile_definitions(${JERRY_NAME}-entry PRIVATE ${DEFINES_JERRY})
-   target_include_directories(${JERRY_NAME}-entry PRIVATE ${INCLUDE_CORE_INTERFACE})
-   target_include_directories(${JERRY_NAME}-entry SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
-   target_include_directories(${JERRY_NAME}-entry SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-   target_include_directories(${JERRY_NAME}-entry SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-   add_dependencies(${JERRY_NAME} ${JERRY_NAME}-entry)
-  endif()
-
-  if(${USE_JERRY_LIBC})
-   add_custom_command(TARGET ${JERRY_NAME}
-                      POST_BUILD
-                      COMMAND echo $<TARGET_FILE:${jerry-libc}> >> ${CMAKE_BINARY_DIR}/${JERRY_NAME}/list)
-  endif()
-
 endif()
