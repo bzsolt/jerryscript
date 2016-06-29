@@ -30,7 +30,7 @@ project (Jerry C ASM)
 # Architecture-specific compile/link flags
  foreach(FLAG ${FLAGS_COMMON_ARCH})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}") # TODO: necessary?
  endforeach()
 
 # Remove rdynamic option
@@ -47,7 +47,7 @@ project (Jerry C ASM)
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
  set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE ON  CACHE BOOL "Enable all-in-one build?")
+ set(ENABLE_ALL_IN_ONE OFF CACHE BOOL "Enable all-in-one build?")
 
 # Setup directories
  # Project binary dir
@@ -229,7 +229,17 @@ project (Jerry C ASM)
 
 # Platform-specific configuration
  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
- set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
+ set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}}) # TODO: necessary?
+
+# User-defined linker-flags
+ if (DEFINED USER_DEFINED_LINKER_FLAGS AND NOT ${USER_DEFINED_LINKER_FLAGS} STREQUAL "UNDEFINED")
+  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${USER_DEFINED_LINKER_FLAGS}")
+ endif()
+
+# User-defined compile-flags
+ if (DEFINED USER_DEFINED_COMPILE_FLAGS AND NOT ${USER_DEFINED_COMPILE_FLAGS} STREQUAL "UNDEFINED")
+  set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} ${USER_DEFINED_COMPILE_FLAGS}")
+ endif()
 
 # Jerry's libc
  if(BUILD_JERRY_LIBC STREQUAL "ON")

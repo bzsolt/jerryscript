@@ -20,6 +20,7 @@ import os
 import subprocess
 import sys
 from os import path
+from os import makedirs
 
 def join_path(pathes):
     return path.abspath(reduce(lambda x, y: path.join(x, y), pathes))
@@ -29,11 +30,22 @@ PROJECT_DIR = join_path([SCRIPT_PATH, '../'])
 BUILD_DIR = join_path([PROJECT_DIR, 'tmp/'])
 
 def add_build_args(parser):
-    parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true', default=False)
-    parser.add_argument('--all-in-one', choices=['on', 'off'], default='off', help='All-in-one build')
-    parser.add_argument('--debug', choices=['on', 'off'], default='off', help='Debug build')
-    parser.add_argument('--lto', choices=['on', 'off'], default='on', help='Enable link-time optimizations')
-    # parser.add_argument('--cmake-params', action='append', help='Add custom arguments to CMake')
+    parser.add_argument('--verbose', '-v', action='store_true', default=False, help='Increase verbosity')
+    parser.add_argument('--unittests', action='store_true', default=False, help='Build unittests')
+    parser.add_argument('--clean', action='store_true', default=False, help='Clean build')
+    parser.add_argument('--all-in-one', choices=['on', 'off'], default='off', help='All-in-one build (default: %(default)s)')
+    parser.add_argument('--debug', choices=['on', 'off'], default='off', help='Debug build (default: %(default)s)')
+    parser.add_argument('--lto', choices=['on', 'off'], default='on', help='Enable link-time optimizations (default: %(default)s)')
+    parser.add_argument('--profile', choices=['full', 'compact', 'minimal'], default='full', help='Specify the ECMAScript profile (default: %(default)s)')
+    parser.add_argument('--error-messages', choices=['on', 'off'], default='off', help='Enable error messages (default: %(default)s)')
+    parser.add_argument('--log', choices=['on', 'off'], default='off', help='Enable logging (default: %(default)s)')
+    parser.add_argument('--valgrind', choices=['on', 'off'], default='off', help='Enable Valgrind support (default: %(default)s)')
+    parser.add_argument('--valgrind-freya', choices=['on', 'off'], default='off', help='Enable Valgrind-Freya support (default: %(default)s)')
+    parser.add_argument('--mem-stats', choices=['on', 'off'], default='off', help='Enable memory-statistics (default: %(default)s)')
+    parser.add_argument('--mem-stress-test', choices=['on', 'off'], default='off', help='Enable mem-stress test (default: %(default)s)')
+    parser.add_argument('--cmake-param', action='append', help='Add custom arguments to CMake')
+    parser.add_argument('--compile-flag', action='append', help='Add custom compile flag')
+    parser.add_argument('--linker-flag', action='append', help='Add custom linker flag')
 
     # TODO: parser.add_argument('--not stripped')
 
@@ -46,12 +58,22 @@ def get_arguments():
 def generate_build_options(arguments):
     build_options = []
 
-    if arguments.verbose:
-        build_options.append('-DCMAKE_VERBOSE_MAKEFILE=ON')
-
+    build_options.append('-DCMAKE_VERBOSE_MAKEFILE=%s' % ('ON' if arguments.verbose else 'OFF'))
+    build_options.append('-DFEATURE_PROFILE=%s' % arguments.profile)
+    build_options.append('-DFEATURE_ERROR_MESSAGES=%s' % arguments.error_messages)
+    build_options.append('-DFEATURE_LOG=%s' % arguments.log)
+    build_options.append('-DFEATURE_VALGRIND=%s' % arguments.valgrind)
+    build_options.append('-DFEATURE_VALGRIND_FREYA=%s' % arguments.valgrind_freya)
+    build_options.append('-DFEATURE_MEM_STATS=%s' % arguments.mem_stats)
+    build_options.append('-DFEATURE_MEM_STRESS_TEST=%s' % arguments.mem_stress_test)
     build_options.append('-DENABLE_ALL_IN_ONE=%s' % arguments.all_in_one.upper())
     build_options.append('-DENABLE_DEBUG=%s' % arguments.debug.upper())
     build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
+    build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
+
+    build_options.extend(arguments.cmake_param if arguments.cmake_param else [])
+    build_options.append('-DUSER_DEFINED_COMPILE_FLAGS=' + ' '.join((arguments.compile_flag if arguments.compile_flag else [])))
+    build_options.append('-DUSER_DEFINED_LINKER_FLAGS=' + ' '.join((arguments.linker_flag if arguments.linker_flag else [])))
 
     return build_options
 
@@ -67,6 +89,9 @@ def configure_build(arguments):
     return subprocess.call(cmakeCmd)
 
 def build_jerry(arguments):
+    if arguments.clean:
+        subprocess.call(['make', '--no-print-directory', '-C', BUILD_DIR, 'clean'])
+
     return subprocess.call(['make', '--no-print-directory', '-C', BUILD_DIR])
 
 def print_result(ret):
