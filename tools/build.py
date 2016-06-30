@@ -33,6 +33,7 @@ def add_build_args(parser):
     parser.add_argument('--verbose', '-v', action='store_true', default=False, help='Increase verbosity')
     parser.add_argument('--unittests', action='store_true', default=False, help='Build unittests')
     parser.add_argument('--clean', action='store_true', default=False, help='Clean build')
+    parser.add_argument('--strip', choices=['on', 'off'], default='on', help='Strip release binary (default: %(default)s)')
     parser.add_argument('--all-in-one', choices=['on', 'off'], default='off', help='All-in-one build (default: %(default)s)')
     parser.add_argument('--debug', choices=['on', 'off'], default='off', help='Debug build (default: %(default)s)')
     parser.add_argument('--lto', choices=['on', 'off'], default='on', help='Enable link-time optimizations (default: %(default)s)')
@@ -72,6 +73,7 @@ def generate_build_options(arguments):
     build_options.append('-DENABLE_ALL_IN_ONE=%s' % arguments.all_in_one.upper())
     build_options.append('-DENABLE_DEBUG=%s' % arguments.debug.upper())
     build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
+    build_options.append('-DSTRIP_RELEASE_BINARY=%s' % arguments.strip.upper())
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
 
     build_options.extend(args_or_empty_list(arguments.cmake_param))
