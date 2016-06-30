@@ -20,13 +20,6 @@ project (Jerry C ASM)
  set(PLATFORM "${CMAKE_SYSTEM_NAME}")
  string(TOUPPER "${PLATFORM}" PLATFORM)
 
-# Compiler configuration
- if(NOT (("${PLATFORM}" STREQUAL "DARWIN") OR ("${PLATFORM}" STREQUAL "EXTERNAL")))
-  if(NOT CMAKE_COMPILER_IS_GNUCC)
-   message(FATAL_ERROR "gcc compiler is required")
-  endif()
- endif()
-
 # Architecture-specific compile/link flags
  foreach(FLAG ${FLAGS_COMMON_ARCH})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
