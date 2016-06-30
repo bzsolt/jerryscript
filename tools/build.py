@@ -48,8 +48,6 @@ def add_build_args(parser):
     parser.add_argument('--compile-flag', action='append', help='Add custom compile flag')
     parser.add_argument('--linker-flag', action='append', help='Add custom linker flag')
 
-    # TODO: parser.add_argument('--not stripped')
-
 def get_arguments():
     parser = argparse.ArgumentParser()
     add_build_args(parser)
