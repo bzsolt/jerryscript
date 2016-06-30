@@ -39,7 +39,7 @@ project (Jerry C ASM)
 
 # Optional build settings
  set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
- set(ENABLE_LTO        ON  CACHE BOOL "Enable LTO build?")
+ set(ENABLE_LTO        OFF CACHE BOOL "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE OFF CACHE BOOL "Enable all-in-one build?")
 
 # Setup directories
@@ -154,7 +154,7 @@ project (Jerry C ASM)
  # LTO
   if(ENABLE_LTO)
    set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -flto")
-   if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
+   if(NOT ("${PLATFORM}" STREQUAL "DARWIN") AND CMAKE_COMPILER_IS_GNUCC)
     set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -fno-fat-lto-objects")
    endif()
    set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
