@@ -16,5 +16,3 @@ set(CMAKE_SYSTEM_NAME Openwrt)
 set(CMAKE_SYSTEM_PROCESSOR mips)
 
 set(CMAKE_C_COMPILER mipsel-openwrt-linux-gcc)
-# FIXME: This could break cross compilation, when the strip is not for the target architecture
-find_program(CMAKE_STRIP NAMES mipsel-openwrt-linux-strip strip)
