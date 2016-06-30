@@ -55,6 +55,9 @@ def get_arguments():
 
     return parser.parse_args()
 
+def args_or_empty_list(arguments):
+    return (arguments if arguments else [])
+
 def generate_build_options(arguments):
     build_options = []
 
@@ -71,9 +74,9 @@ def generate_build_options(arguments):
     build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
 
-    build_options.extend(arguments.cmake_param if arguments.cmake_param else [])
-    build_options.append('-DUSER_DEFINED_COMPILE_FLAGS=' + ' '.join((arguments.compile_flag if arguments.compile_flag else [])))
-    build_options.append('-DUSER_DEFINED_LINKER_FLAGS=' + ' '.join((arguments.linker_flag if arguments.linker_flag else [])))
+    build_options.extend(args_or_empty_list(arguments.cmake_param))
+    build_options.append('-DUSER_DEFINED_COMPILE_FLAGS=' + ' '.join(args_or_empty_list(arguments.compile_flag)))
+    build_options.append('-DUSER_DEFINED_LINKER_FLAGS=' + ' '.join(args_or_empty_list(arguments.linker_flag)))
 
     return build_options
 
