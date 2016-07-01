@@ -36,12 +36,12 @@ project (Jerry C ASM)
  set(BUILD_JERRY               ON  CACHE BOOL "Build jerry command line tool?")
  set(BUILD_UNITTESTS           OFF CACHE BOOL "Build unit tests?")
 
-# Optional build settings
- set(ENABLE_JERRY_PORT_DEFAULT ON CACHE BOOL  "Enable jerry-port-default?")
- set(ENABLE_DEBUG              OFF CACHE BOOL "Enable debug build?")
- set(ENABLE_LTO                OFF CACHE BOOL "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE         ON CACHE BOOL "Enable all-in-one build?")
 
+# Optional build settings
+ set(USE_PORT_DIR              "DEFAULT" CACHE STRING "Should we use default or external port?")
+ set(ENABLE_DEBUG              OFF       CACHE BOOL   "Enable debug build?")
+ set(ENABLE_LTO                OFF       CACHE BOOL   "Enable LTO build?")
+ set(ENABLE_ALL_IN_ONE         ON        CACHE BOOL   "Enable all-in-one build?")
 
 # Setup directories
  # Project binary dir
@@ -58,11 +58,6 @@ project (Jerry C ASM)
 
  if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
- endif()
-
- # todo a jerrymainbebe rakni
- if(BUILD_JERRY STREQUAL "ON" AND NOT ENABLE_JERRY_PORT_DEFAULT)
-  message(FATAL_ERROR "BUILD_JERRY is only supported with ENABLE_JERRY_PORT_DEFAULT")
  endif()
 
  if("${PLATFORM}" STREQUAL "LINUX")
@@ -132,13 +127,13 @@ project (Jerry C ASM)
  endif()
 
  # should we use default or external port?
- if (ENABLE_JERRY_PORT_DEFAULT STREQUAL "ON")
+ if (${USE_PORT_DIR} STREQUAL "DEFAULT")
   set(PORT_DIR ${CMAKE_SOURCE_DIR}/targets/default)
   if (COMPILER_DEFAULT_LIBC STREQUAL "ON" OR NOT (USE_JERRY_LIBC OR USE_EXTERNAL_LIBC))
    set(DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
   endif()
- elseif(DEFINED EXTERNAL_PORT_DIR AND NOT EXTERNAL_PORT_DIR STREQUAL "UNDEFINED")
-   set(PORT_DIR ${EXTERNAL_PORT_DIR})
+ else()
+   set(PORT_DIR ${USE_PORT_DIR})
  endif()
 
 # Are there any interfaces for external libraries, other than libc, that should be registered?
