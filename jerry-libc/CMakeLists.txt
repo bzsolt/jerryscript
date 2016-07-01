@@ -82,4 +82,4 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
 
  target_compile_definitions(${JERRY_LIBC_NAME} PRIVATE ${DEFINES_LIBC})
  target_include_directories(${JERRY_LIBC_NAME} PRIVATE ${INCLUDE_LIBC})
- target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
+ target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
