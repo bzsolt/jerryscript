@@ -30,17 +30,18 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
- set(BUILD_JERRY_CORE          ON CACHE BOOL "Build jerry-core?")
- #set(BUILD_JERRY_PORT_DEFAULT ON CACHE BOOL "Build jerry-port-default?")
- set(BUILD_JERRY_LIBC          ON CACHE BOOL "Build jerry-libc?")
- set(BUILD_JERRY_LIBM          ON CACHE BOOL "Build jerry-libm?")
- set(BUILD_JERRY               ON CACHE BOOL "Build jerry command line tool?")
- set(BUILD_UNITTESTS          OFF CACHE BOOL "Build unit tests?")
+ set(BUILD_JERRY_CORE          ON  CACHE BOOL "Build jerry-core?")
+ set(BUILD_JERRY_LIBC          ON  CACHE BOOL "Build jerry-libc?")
+ set(BUILD_JERRY_LIBM          ON  CACHE BOOL "Build jerry-libm?")
+ set(BUILD_JERRY               ON  CACHE BOOL "Build jerry command line tool?")
+ set(BUILD_UNITTESTS           OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
- set(ENABLE_DEBUG      OFF CACHE BOOL "Enable debug build?")
- set(ENABLE_LTO        OFF CACHE BOOL "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE OFF CACHE BOOL "Enable all-in-one build?")
+ set(ENABLE_JERRY_PORT_DEFAULT ON CACHE BOOL  "Enable jerry-port-default?")
+ set(ENABLE_DEBUG              OFF CACHE BOOL "Enable debug build?")
+ set(ENABLE_LTO                OFF CACHE BOOL "Enable LTO build?")
+ set(ENABLE_ALL_IN_ONE         ON CACHE BOOL "Enable all-in-one build?")
+
 
 # Setup directories
  # Project binary dir
@@ -57,6 +58,10 @@ project (Jerry C ASM)
 
  if(BUILD_UNITTESTS STREQUAL "ON")
   set(ENABLE_DEBUG ON)
+ endif()
+
+ if(BUILD_JERRY STREQUAL "ON" AND NOT ENABLE_JERRY_PORT_DEFAULT)
+  message(FATAL_ERROR "BUILD_JERRY is only supported with ENABLE_JERRY_PORT_DEFAULT")
  endif()
 
  if("${PLATFORM}" STREQUAL "LINUX")
@@ -105,6 +110,13 @@ project (Jerry C ASM)
   set(USE_EXTERNAL_LIBC FALSE)
  elseif(NOT DEFINED EXTERNAL_LIBC_INTERFACE OR EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
   set(USE_JERRY_LIBC TRUE)
+  if(BUILD_JERRY_LIBC STREQUAL "OFF")
+   find_library(JERRY_LIBC_FOUND NAMES jerry-libc PATHS CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+   if(NOT JERRY_LIBC_FOUND)
+    set(USE_JERRY_LIBC FALSE)
+   endif()
+  endif()
+
   set(USE_EXTERNAL_LIBC FALSE)
  else()
   set(USE_JERRY_LIBC FALSE)
@@ -118,11 +130,14 @@ project (Jerry C ASM)
   set(USE_EXTERNAL_LIBC TRUE)
  endif()
 
- # Should we use external port?
- if(DEFINED EXTERNAL_PORT_DIR AND NOT EXTERNAL_PORT_DIR STREQUAL "UNDEFINED")
+ # should we use default or external port?
+ if (ENABLE_JERRY_PORT_DEFAULT STREQUAL "ON")
+  set(PORT_DIR ${CMAKE_SOURCE_DIR}/targets/default)
+  if (COMPILER_DEFAULT_LIBC STREQUAL "ON" OR NOT (USE_JERRY_LIBC OR USE_EXTERNAL_LIBC))
+   set(DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
+  endif()
+ elseif(DEFINED EXTERNAL_PORT_DIR AND NOT EXTERNAL_PORT_DIR STREQUAL "UNDEFINED")
    set(PORT_DIR ${EXTERNAL_PORT_DIR})
- else()
-   set(PORT_DIR ${CMAKE_SOURCE_DIR}/targets/default)
  endif()
 
 # Are there any interfaces for external libraries, other than libc, that should be registered?
