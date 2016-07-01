@@ -60,6 +60,7 @@ project (Jerry C ASM)
   set(ENABLE_DEBUG ON)
  endif()
 
+ # todo a jerrymainbebe rakni
  if(BUILD_JERRY STREQUAL "ON" AND NOT ENABLE_JERRY_PORT_DEFAULT)
   message(FATAL_ERROR "BUILD_JERRY is only supported with ENABLE_JERRY_PORT_DEFAULT")
  endif()
@@ -181,7 +182,7 @@ project (Jerry C ASM)
  # Debug information
   set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -g -gdwarf-4")
 
- # Warnings
+ # Warnings todo: nem kell a macro
   macro(append variable value)
     set(${variable} "${${variable}} ${value}")
   endmacro()
@@ -226,7 +227,7 @@ project (Jerry C ASM)
  # C
   set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
- # build mode specific compile/link flags
+ # build mode specific compile/link flags   todo: cmake-s build flagek
  if(ENABLE_DEBUG)
   if(BUILD_UNITTESTS STREQUAL "ON")
    set(FLAGS_COMMON_BUILD_MODE "-O3")
@@ -279,7 +280,7 @@ endif()
   add_subdirectory(tests/unit)
  endif()
 
-# External
+# External    todo : kivagni innen
 if(${EXTERNAL_BUILD})
   set(TARGET_NAME external)
   add_custom_target(${TARGET_NAME} ALL)

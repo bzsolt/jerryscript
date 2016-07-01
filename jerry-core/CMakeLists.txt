@@ -65,6 +65,9 @@ project (${JERRY_CORE_NAME} C ASM)
  set(DEFINES_MEM_STRESS_TEST
      JMEM_GC_BEFORE_EACH_ALLOC)
 
+ # Memory statistics
+  set(DEFINES_MEMORY_STATISTICS JMEM_STATS)
+
  # ES5.1 profiles
   # Full profile
   if(FEATURE_PROFILE STREQUAL "full")
@@ -95,9 +98,6 @@ project (${JERRY_CORE_NAME} C ASM)
   else()
    message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported")
   endif()
-
- # Memory statistics
-  set(DEFINES_MEMORY_STATISTICS JMEM_STATS)
 
  # Valgrind
   set(DEFINES_JERRY_VALGRIND JERRY_VALGRIND)
@@ -242,11 +242,11 @@ project (${JERRY_CORE_NAME} C ASM)
               PROPERTY COMPILE_FLAGS "${C_FLAGS_CORE} ${FLAGS_COMMON_BUILD_MODE} ${COMPILE_FLAGS_JERRY}")
  target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
- target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
+ #target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 
- if(BUILD_UNITTESTS STREQUAL "ON")
+ #if(BUILD_UNITTESTS STREQUAL "ON")
   target_compile_definitions(${JERRY_CORE_NAME} INTERFACE ${DEFINES_JERRY})
   target_include_directories(${JERRY_CORE_NAME} INTERFACE ${INCLUDE_CORE})
- endif()
+ #endif()

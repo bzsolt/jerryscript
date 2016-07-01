@@ -28,12 +28,7 @@ set(JERRY_NAME    jerry)
     set(SOURCE_JERRY_STANDALONE_MAIN_DARWIN main-unix.c)
 
 # Platform-specific configuration
- set(MODIFIERS_LISTS ${MODIFIERS_LISTS_${PLATFORM_EXT}})
  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
-
- if(NOT ${EXTERNAL_BUILD})
-  add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
- endif()
 
 
  # Generage map file
@@ -46,8 +41,8 @@ set(JERRY_NAME    jerry)
 
 # Include directories
  # Core interface
-  set(INCLUDE_CORE_INTERFACE
-      ${CMAKE_SOURCE_DIR}/jerry-core)
+#  set(INCLUDE_CORE_INTERFACE
+#      ${CMAKE_SOURCE_DIR}/jerry-core)
 
  # LIBC interface
  if(USE_JERRY_LIBC)
@@ -55,12 +50,13 @@ set(JERRY_NAME    jerry)
  endif()
 
 if(NOT ${EXTERNAL_BUILD})
+  add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
   set_property(TARGET ${JERRY_NAME}
                    PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE} ${C_FLAGS_JERRY}")
   set_property(TARGET ${JERRY_NAME}
                PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE} ${LINKER_FLAGS_STATIC} ${LINKER_FLAGS_COMMON}")
   target_compile_definitions(${JERRY_NAME} PRIVATE ${DEFINES_JERRY})
-  target_include_directories(${JERRY_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
+#  target_include_directories(${JERRY_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
   target_include_directories(${JERRY_NAME} PRIVATE ${PORT_DIR})
   target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
   target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})

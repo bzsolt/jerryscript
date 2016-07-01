@@ -37,6 +37,6 @@ set_property(TARGET ${JERRY_LIBM_NAME}
 
 target_include_directories(${JERRY_LIBM_NAME} PRIVATE ${INCLUDE_LIBM})
 
-if(BUILD_UNITTESTS STREQUAL "ON")
+#if(BUILD_UNITTESTS STREQUAL "ON")
  target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
-endif()
+#endif()
