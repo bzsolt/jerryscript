@@ -30,18 +30,18 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
- set(BUILD_JERRY_CORE          ON  CACHE BOOL "Build jerry-core?")
- set(BUILD_JERRY_LIBC          ON  CACHE BOOL "Build jerry-libc?")
- set(BUILD_JERRY_LIBM          ON  CACHE BOOL "Build jerry-libm?")
- set(BUILD_JERRY               ON  CACHE BOOL "Build jerry command line tool?")
- set(BUILD_UNITTESTS           OFF CACHE BOOL "Build unit tests?")
-
+ set(BUILD_JERRY_CORE  ON  CACHE BOOL "Build jerry-core?")
+ set(BUILD_JERRY_LIBC  ON  CACHE BOOL "Build jerry-libc?")
+ set(BUILD_JERRY_LIBM  ON  CACHE BOOL "Build jerry-libm?")
+ set(BUILD_JERRY       ON  CACHE BOOL "Build jerry command line tool?")
+ set(BUILD_UNITTESTS   OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
- set(USE_PORT_DIR              "DEFAULT" CACHE STRING "Should we use default or external port?")
- set(ENABLE_DEBUG              OFF       CACHE BOOL   "Enable debug build?")
- set(ENABLE_LTO                OFF       CACHE BOOL   "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE         ON        CACHE BOOL   "Enable all-in-one build?")
+ set(USE_PORT_DIR      "DEFAULT" CACHE STRING "Should we use default or external port?")
+ set(USE_LIBC          "JERRY"   CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
+ set(ENABLE_DEBUG      OFF       CACHE BOOL   "Enable debug build?")
+ set(ENABLE_LTO        OFF       CACHE BOOL   "Enable LTO build?")
+ set(ENABLE_ALL_IN_ONE ON        CACHE BOOL   "Enable all-in-one build?")
 
 # Setup directories
  # Project binary dir
@@ -76,8 +76,6 @@ project (Jerry C ASM)
  elseif("${PLATFORM}" STREQUAL "EXTERNAL")
   set(PLATFORM_EXT "EXTERNAL")
   set(EXTERNAL_BUILD TRUE)
-
-  set(EXTERNAL_LIBC_INTERFACE "UNDEFINED" CACHE STRING "Path to external libc include directory")
   set(EXTERNAL_LIBS_INTERFACE "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
   set(EXTERNAL_MEM_HEAP_SIZE_KB "256" CACHE STRING "Size of memory heap, in kilobytes")
  elseif("${PLATFORM}" STREQUAL "OPENWRT")
@@ -89,6 +87,18 @@ project (Jerry C ASM)
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
  endif()
 
+ #Should we use external libc?
+ if(NOT ${USE_LIBC} STREQUAL "COMPILER" AND NOT ${USE_LIBC} STREQUAL "JERRY")
+  if(NOT EXISTS "${USE_LIBC}/stdlib.h")
+   message(FATAL_ERROR "It seems that external libc interface '${USE_LIBC}' doesn't provide stdlib.h header")
+  endif()
+  set(INCLUDE_LIBC_INTERFACE ${USE_LIBC})
+ elseif (${USE_LIBC} STREQUAL "JERRY")
+  set(INCLUDE_LIBC_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
+ endif()
+
+
+
  if(CMAKE_COMPILER_IS_GNUCC)
   if(ENABLE_LTO)
    # Use gcc-ar and gcc-ranlib to support LTO
@@ -97,39 +107,10 @@ project (Jerry C ASM)
   endif()
  endif()
 
-# Should we use external libc?
- if(DEFINED COMPILER_DEFAULT_LIBC AND COMPILER_DEFAULT_LIBC STREQUAL "ON")
-  if(DEFINED EXTERNAL_LIBC_INTERFACE AND NOT EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-    message(FATAL_ERROR "EXTERNAL_LIBC_INTERFACE='${EXTERNAL_LIBC_INTERFACE}' should not be set in case compiler's default libc is used (COMPILER_DEFAULT_LIBC=ON)")
-  endif()
-  set(USE_JERRY_LIBC FALSE)
-  set(USE_EXTERNAL_LIBC FALSE)
- elseif(NOT DEFINED EXTERNAL_LIBC_INTERFACE OR EXTERNAL_LIBC_INTERFACE STREQUAL "UNDEFINED")
-  set(USE_JERRY_LIBC TRUE)
-  if(BUILD_JERRY_LIBC STREQUAL "OFF")
-   find_library(JERRY_LIBC_FOUND NAMES jerry-libc PATHS CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-   if(NOT JERRY_LIBC_FOUND)
-    set(USE_JERRY_LIBC FALSE)
-   endif()
-  endif()
-
-  set(USE_EXTERNAL_LIBC FALSE)
- else()
-  set(USE_JERRY_LIBC FALSE)
-
-  if(NOT EXISTS "${EXTERNAL_LIBC_INTERFACE}/stdlib.h")
-   message(FATAL_ERROR "It seems that external libc interface '${EXTERNAL_LIBC_INTERFACE}' doesn't provide stdlib.h header")
-   set(USE_EXTERNAL_LIBC FALSE)
-  endif()
-
-  set(INCLUDE_LIBC_INTERFACE ${EXTERNAL_LIBC_INTERFACE})
-  set(USE_EXTERNAL_LIBC TRUE)
- endif()
-
  # should we use default or external port?
  if (${USE_PORT_DIR} STREQUAL "DEFAULT")
   set(PORT_DIR ${CMAKE_SOURCE_DIR}/targets/default)
-  if (COMPILER_DEFAULT_LIBC STREQUAL "ON" OR NOT (USE_JERRY_LIBC OR USE_EXTERNAL_LIBC))
+  if (${USE_LIBC} STREQUAL "COMPILER")
    set(DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
   endif()
  else()
@@ -157,8 +138,8 @@ project (Jerry C ASM)
  endif()
  set(LINKER_FLAGS_COMMON_DARWIN "-lSystem")
 
- # Turn off linking to compiler's default libc, in case jerry-libc is used
- if(USE_JERRY_LIBC OR USE_EXTERNAL_LIBC)
+ # Turn off linking to compiler's default libc, in case jerry-libc or external is used
+ if(NOT USE_LIBC STREQUAL "COMPILER")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
  endif()
 
@@ -200,7 +181,7 @@ project (Jerry C ASM)
   add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations)
   add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
   if(CMAKE_COMPILER_IS_GNUCC)
-    if(USE_JERRY_LIBC)
+    if(${USE_LIBC} STREQUAL "JERRY")
       add_jerry_compile_flags(-Werror)
     endif()
     add_jerry_compile_warnings(logical-op)
@@ -274,34 +255,3 @@ endif()
  if (BUILD_UNITTESTS STREQUAL "ON")
   add_subdirectory(tests/unit)
  endif()
-
-# External    todo : kivagni innen
-if(${EXTERNAL_BUILD})
-  set(TARGET_NAME external)
-  add_custom_target(${TARGET_NAME} ALL)
-
-  add_custom_command(TARGET ${TARGET_NAME}
-                     POST_BUILD
-                     COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${TARGET_NAME}
-                     COMMAND echo $<TARGET_FILE:jerry-libm> > ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list
-                     COMMAND echo $<TARGET_FILE:jerry-core> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
-
-  if(DEFINED EXTERNAL_BUILD_ENTRY_FILE)
-   add_library(${TARGET_NAME}-entry STATIC ${EXTERNAL_BUILD_ENTRY_FILE})
-   set_property(TARGET ${TARGET_NAME}-entry
-                PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${FLAGS_COMMON_BUILD_MODE}}")
-   target_compile_definitions(${TARGET_NAME}-entry PRIVATE ${DEFINES_JERRY})
-   target_include_directories(${TARGET_NAME}-entry PRIVATE ${INCLUDE_CORE_INTERFACE})
-   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
-   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
-   target_include_directories(${TARGET_NAME}-entry SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
-   add_dependencies(${TARGET_NAME} ${TARGET_NAME}-entry)
-  endif()
-
-  if(${USE_JERRY_LIBC})
-   add_custom_command(TARGET ${TARGET_NAME}
-                      POST_BUILD
-                      COMMAND echo $<TARGET_FILE:jerry-libc> >> ${CMAKE_BINARY_DIR}/${TARGET_NAME}/list)
-  endif()
-
-endif()

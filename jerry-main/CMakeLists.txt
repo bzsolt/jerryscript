@@ -41,13 +41,8 @@ set(JERRY_NAME    jerry)
 
 # Include directories
  # Core interface
-#  set(INCLUDE_CORE_INTERFACE
-#      ${CMAKE_SOURCE_DIR}/jerry-core)
-
- # LIBC interface
- if(USE_JERRY_LIBC)
-  set(INCLUDE_LIBC_INTERFACE ${INCLUDE_JERRY_LIBC_INTERFACE})
- endif()
+  set(INCLUDE_CORE_INTERFACE
+      ${CMAKE_SOURCE_DIR}/jerry-core)
 
 if(NOT ${EXTERNAL_BUILD})
   add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
@@ -68,7 +63,7 @@ if(NOT ${EXTERNAL_BUILD})
    set(JERRY_LIBS ${JERRY_LIBS} jerry-libm)
   endif()
 
-  if(USE_JERRY_LIBC)
+  if(${USE_LIBC} STREQUAL "JERRY")
    set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
   endif()
 

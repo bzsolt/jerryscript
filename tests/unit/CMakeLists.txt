@@ -24,11 +24,6 @@ project (Unittest C)
  # Unit tests main modules
    file(GLOB SOURCE_UNIT_TEST_MAIN_MODULES *.c)
 
- # LIBC interface
-  if(USE_JERRY_LIBC)
-   set(INCLUDE_LIBC_INTERFACE ${INCLUDE_JERRY_LIBC_INTERFACE})
-  endif()
-
 # Unit tests declaration
   if(("${PLATFORM}" STREQUAL "LINUX") OR ("${PLATFORM}" STREQUAL "DARWIN"))
    add_custom_target(unittests)
@@ -55,7 +50,7 @@ project (Unittest C)
      set(REQUIRED_LIBS m)
     endif()
 
-    if(USE_JERRY_LIBC)
+    if(${USE_LIBC} STREQUAL "JERRY")
      set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
     endif()
 
