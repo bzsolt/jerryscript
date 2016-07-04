@@ -38,13 +38,14 @@ project (Jerry C ASM)
 
 # Compile/link flags
  # build mode specific compile/link flags
- if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  if(BUILD_UNITTESTS STREQUAL "ON")
-   set(CMAKE_C_FLAGS "-O3")
-  endif()
- elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_C_FLAGS "-Os")
  endif()
+
+ if(BUILD_UNITTESTS STREQUAL "ON")
+   set(CMAKE_C_FLAGS "-O3")
+ endif()
+
 
 # Architecture-specific compile/link flags
  foreach(FLAG ${FLAGS_COMMON_ARCH})
@@ -66,22 +67,17 @@ project (Jerry C ASM)
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
  if("${PLATFORM}" STREQUAL "LINUX")
-  set(EXTERNAL_BUILD FALSE)
-
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "DARWIN")
   set(ENABLE_LTO        OFF  CACHE BOOL "Enable LTO build?")
   set(ENABLE_ALL_IN_ONE ON   CACHE BOOL "Enable all-in-one build?")
-  set(EXTERNAL_BUILD FALSE)
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
 
  elseif("${PLATFORM}" STREQUAL "EXTERNAL")
-  set(EXTERNAL_BUILD TRUE)
   set(EXTERNAL_LIBS_INTERFACE "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
   set(EXTERNAL_MEM_HEAP_SIZE_KB "256" CACHE STRING "Size of memory heap, in kilobytes")
  elseif("${PLATFORM}" STREQUAL "OPENWRT")
-  set(EXTERNAL_BUILD FALSE)
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  else()
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")

@@ -38,14 +38,13 @@ set(JERRY_NAME    jerry)
   set(INCLUDE_CORE_INTERFACE
       ${CMAKE_SOURCE_DIR}/jerry-core)
 
-if(NOT ${EXTERNAL_BUILD})
+if(NOT "${PLATFORM}" STREQUAL "EXTERNAL")
   add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN})
   set_property(TARGET ${JERRY_NAME}
                    PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
   set_property(TARGET ${JERRY_NAME}
                PROPERTY LINK_FLAGS "${COMPILE_FLAGS_COMMON} ${LINKER_FLAGS_STATIC} ${LINKER_FLAGS_COMMON}")
   target_compile_definitions(${JERRY_NAME} PRIVATE ${DEFINES_JERRY})
-#  target_include_directories(${JERRY_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
   target_include_directories(${JERRY_NAME} PRIVATE ${PORT_DIR})
   target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
   target_include_directories(${JERRY_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
