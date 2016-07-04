@@ -64,15 +64,16 @@ project (${JERRY_CORE_NAME} C ASM)
  # ES5.1 profiles
   # Full profile
   if(FEATURE_PROFILE STREQUAL "full")
-   set(DEFINES_PROFILE CONFIG_ECMA_NUMBER_TYPE=CONFIG_ECMA_NUMBER_FLOAT64)
+   set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_ECMA_NUMBER_TYPE=CONFIG_ECMA_NUMBER_FLOAT64)
 
   # Compact profile
   elseif(FEATURE_PROFILE STREQUAL "compact")
-   set(DEFINES_PROFILE CONFIG_ECMA_COMPACT_PROFILE)
+   set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_ECMA_COMPACT_PROFILE)
 
   # Minimal compact profile
   elseif(FEATURE_PROFILE STREQUAL "minimal")
-   set(DEFINES_PROFILE
+   set(DEFINES_JERRY
+       ${DEFINES_JERRY}
        CONFIG_ECMA_COMPACT_PROFILE
 #
 # Date and RegExp built-in objects are also disabled in non-minimal compact profile build
@@ -210,9 +211,6 @@ project (${JERRY_CORE_NAME} C ASM)
 
  # C
  set(C_FLAGS_CORE "-std=c99 -pedantic")
-
- # set ES5.1 profile
- set(DEFINES_JERRY ${DEFINES_JERRY} ${DEFINES_PROFILE})
 
  add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
  set_property(TARGET ${JERRY_CORE_NAME}

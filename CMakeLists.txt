@@ -37,7 +37,6 @@ project (Jerry C ASM)
  set(ENABLE_ALL_IN_ONE         ON          CACHE BOOL   "Enable all-in-one build?")
  set(ENABLE_STRIP              ON          CACHE BOOL   "Discards all symbols from object files?")
  set(EXTERNAL_LIBS_INTERFACE   "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
- set(EXTERNAL_MEM_HEAP_SIZE_KB "256"       CACHE STRING "Size of memory heap, in kilobytes")
 
  if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
@@ -46,6 +45,10 @@ project (Jerry C ASM)
  if("${PLATFORM}" STREQUAL "DARWIN")
   set(ENABLE_LTO "OFF")
   set(ENABLE_ALL_IN_ONE "ON")
+ endif()
+
+ if("${PLATFORM}" STREQUAL "EXTERNAL")
+  set(EXTERNAL_MEM_HEAP_SIZE_KB "256"      CACHE STRING "Size of memory heap, in kilobytes")
  endif()
 
 # Compile/link flags
