@@ -25,12 +25,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-/**
- * Verify that unit tests are built with enabled debug check
- */
-#ifdef JERRY_NDEBUG
-# error "defined (JERRY_NDEBUG) in a unit test"
-#endif /* JERRY_NDEBUG */
 
 /**
  * Test initialization statement that should be included
