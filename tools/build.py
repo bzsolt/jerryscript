@@ -35,7 +35,7 @@ def add_build_args(parser):
     parser.add_argument('--clean', action='store_true', default=False, help='Clean build')
     parser.add_argument('--strip', choices=['on', 'off'], default='on', help='Strip release binary (default: %(default)s)')
     parser.add_argument('--all-in-one', choices=['on', 'off'], default='off', help='All-in-one build (default: %(default)s)')
-    parser.add_argument('--debug', choices=['on', 'off'], default='off', help='Debug build (default: %(default)s)')
+    parser.add_argument('--debug', action='store_true', default=False, help='Debug build')
     parser.add_argument('--lto', choices=['on', 'off'], default='on', help='Enable link-time optimizations (default: %(default)s)')
     parser.add_argument('--profile', choices=['full', 'compact', 'minimal'], default='full', help='Specify the ECMAScript profile (default: %(default)s)')
     parser.add_argument('--error-messages', choices=['on', 'off'], default='off', help='Enable error messages (default: %(default)s)')
@@ -61,6 +61,7 @@ def generate_build_options(arguments):
     build_options = []
 
     build_options.append('-DCMAKE_VERBOSE_MAKEFILE=%s' % ('ON' if arguments.verbose else 'OFF'))
+    build_options.append('-DCMAKE_BUILD_TYPE=%s' % ('Debug' if arguments.debug else 'Release'))
     build_options.append('-DFEATURE_PROFILE=%s' % arguments.profile)
     build_options.append('-DFEATURE_ERROR_MESSAGES=%s' % arguments.error_messages)
     build_options.append('-DFEATURE_LOG=%s' % arguments.log)
@@ -69,7 +70,6 @@ def generate_build_options(arguments):
     build_options.append('-DFEATURE_MEM_STATS=%s' % arguments.mem_stats)
     build_options.append('-DFEATURE_MEM_STRESS_TEST=%s' % arguments.mem_stress_test)
     build_options.append('-DENABLE_ALL_IN_ONE=%s' % arguments.all_in_one.upper())
-    build_options.append('-DENABLE_DEBUG=%s' % arguments.debug.upper())
     build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
     build_options.append('-DSTRIP_RELEASE_BINARY=%s' % arguments.strip.upper())
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))

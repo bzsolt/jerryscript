@@ -20,12 +20,6 @@ project (Jerry C ASM)
  set(PLATFORM "${CMAKE_SYSTEM_NAME}")
  string(TOUPPER "${PLATFORM}" PLATFORM)
 
-# Architecture-specific compile/link flags
- foreach(FLAG ${FLAGS_COMMON_ARCH})
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
- endforeach()
-
 # Remove rdynamic option
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
@@ -39,9 +33,24 @@ project (Jerry C ASM)
 # Optional build settings
  set(USE_PORT_DIR      "DEFAULT" CACHE STRING "Should we use default or external port?")
  set(USE_LIBC          "JERRY"   CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
- set(ENABLE_DEBUG      OFF       CACHE BOOL   "Enable debug build?")
  set(ENABLE_LTO        OFF       CACHE BOOL   "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON        CACHE BOOL   "Enable all-in-one build?")
+
+# Compile/link flags
+ # build mode specific compile/link flags
+ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if(BUILD_UNITTESTS STREQUAL "ON")
+   set(CMAKE_C_FLAGS "-O3")
+  endif()
+ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CMAKE_C_FLAGS "-Os")
+ endif()
+
+# Architecture-specific compile/link flags
+ foreach(FLAG ${FLAGS_COMMON_ARCH})
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
+ endforeach()
 
 # Setup directories
  # Project binary dir
@@ -55,10 +64,6 @@ project (Jerry C ASM)
 
  # Archive targets output Directory
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
-
- if(BUILD_UNITTESTS STREQUAL "ON")
-  set(ENABLE_DEBUG ON)
- endif()
 
  if("${PLATFORM}" STREQUAL "LINUX")
   set(PLATFORM_EXT "LINUX")
@@ -203,17 +208,8 @@ project (Jerry C ASM)
  # C
   set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
- # build mode specific compile/link flags   todo: cmake-s build flagek
- if(ENABLE_DEBUG)
-  if(BUILD_UNITTESTS STREQUAL "ON")
-   set(FLAGS_COMMON_BUILD_MODE "-O3")
-  endif()
- else()
-  set(FLAGS_COMMON_BUILD_MODE "-Os")
- endif()
-
 # Strip binary
- if(NOT ENABLE_DEBUG AND ${STRIP_RELEASE_BINARY} STREQUAL "ON")
+ if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug") AND ${STRIP_RELEASE_BINARY} STREQUAL "ON")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
  endif()
 
