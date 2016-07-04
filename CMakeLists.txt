@@ -31,14 +31,21 @@ project (Jerry C ASM)
  set(BUILD_UNITTESTS   OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
- set(USE_PORT_DIR      "DEFAULT" CACHE STRING "Should we use default or external port?")
- set(USE_LIBC          "JERRY"   CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
- set(ENABLE_LTO        OFF       CACHE BOOL   "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE ON        CACHE BOOL   "Enable all-in-one build?")
- set(ENABLE_STRIP      ON        CACHE BOOL   "Discards all symbols from object files?")
+ set(USE_PORT_DIR              "DEFAULT"   CACHE STRING "Should we use default or external port?")
+ set(USE_LIBC                  "JERRY"     CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
+ set(ENABLE_LTO                OFF         CACHE BOOL   "Enable LTO build?")
+ set(ENABLE_ALL_IN_ONE         ON          CACHE BOOL   "Enable all-in-one build?")
+ set(ENABLE_STRIP              ON          CACHE BOOL   "Discards all symbols from object files?")
+ set(EXTERNAL_LIBS_INTERFACE   "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
+ set(EXTERNAL_MEM_HEAP_SIZE_KB "256"       CACHE STRING "Size of memory heap, in kilobytes")
 
  if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
+ endif()
+
+ if("${PLATFORM}" STREQUAL "DARWIN")
+  set(ENABLE_LTO "OFF")
+  set(ENABLE_ALL_IN_ONE "ON")
  endif()
 
 # Compile/link flags
@@ -71,16 +78,7 @@ project (Jerry C ASM)
  # Archive targets output Directory
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
- if("${PLATFORM}" STREQUAL "LINUX")
- elseif("${PLATFORM}" STREQUAL "DARWIN")
-  set(ENABLE_LTO        OFF  CACHE BOOL "Enable LTO build?")
-  set(ENABLE_ALL_IN_ONE ON   CACHE BOOL "Enable all-in-one build?")
-
- elseif("${PLATFORM}" STREQUAL "EXTERNAL")
-  set(EXTERNAL_LIBS_INTERFACE "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
-  set(EXTERNAL_MEM_HEAP_SIZE_KB "256" CACHE STRING "Size of memory heap, in kilobytes")
- elseif("${PLATFORM}" STREQUAL "OPENWRT")
- else()
+ if (NOT "${PLATFORM}" MATCHES "^(LINUX|DARWIN|EXTERNAL|OPENWRT)$")
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
  endif()
 
