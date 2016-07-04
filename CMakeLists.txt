@@ -36,16 +36,21 @@ project (Jerry C ASM)
  set(ENABLE_LTO        OFF       CACHE BOOL   "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON        CACHE BOOL   "Enable all-in-one build?")
 
+
 # Compile/link flags
  # build mode specific compile/link flags
- if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  set(CMAKE_C_FLAGS "-Os")
+
+ if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release")
  endif()
 
- if(BUILD_UNITTESTS STREQUAL "ON")
-   set(CMAKE_C_FLAGS "-O3")
+ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if(BUILD_UNITTESTS STREQUAL "ON")
+   set(CMAKE_C_FLAGS_DEBUG "-O3")
+  endif()
+ else()
+   set(CMAKE_C_FLAGS_RELEASE "-Os")
  endif()
-
 
 # Architecture-specific compile/link flags
  foreach(FLAG ${FLAGS_COMMON_ARCH})

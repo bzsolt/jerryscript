@@ -19,11 +19,13 @@ set(JERRY_LIBM_NAME    jerry-libm)
 project (${JERRY_LIBM_NAME} C)
 
 # Compiler / linker flags
+# TODO: Reduce the below list of warning/error disablings as much as possible
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-error=sign-compare")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-error=sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-compare")
+set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-strict-aliasing")
 
 # Include directories
 set(INCLUDE_LIBM ${CMAKE_CURRENT_SOURCE_DIR}/include)
