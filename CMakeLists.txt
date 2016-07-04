@@ -66,27 +66,22 @@ project (Jerry C ASM)
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
  if("${PLATFORM}" STREQUAL "LINUX")
-  set(PLATFORM_EXT "LINUX")
   set(EXTERNAL_BUILD FALSE)
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "DARWIN")
   set(ENABLE_LTO        OFF  CACHE BOOL "Enable LTO build?")
   set(ENABLE_ALL_IN_ONE ON   CACHE BOOL "Enable all-in-one build?")
-  set(PLATFORM_EXT "DARWIN")
   set(EXTERNAL_BUILD FALSE)
 
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
 
  elseif("${PLATFORM}" STREQUAL "EXTERNAL")
-  set(PLATFORM_EXT "EXTERNAL")
   set(EXTERNAL_BUILD TRUE)
   set(EXTERNAL_LIBS_INTERFACE "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
   set(EXTERNAL_MEM_HEAP_SIZE_KB "256" CACHE STRING "Size of memory heap, in kilobytes")
  elseif("${PLATFORM}" STREQUAL "OPENWRT")
-  set(PLATFORM_EXT "LINUX")
   set(EXTERNAL_BUILD FALSE)
-
   option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  else()
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
@@ -140,8 +135,9 @@ project (Jerry C ASM)
  set(COMPILE_FLAGS_JERRY "-fno-builtin")
  if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
   set(LINKER_FLAGS_COMMON "-Wl,-z,noexecstack")
+ else()
+  set(LINKER_FLAGS_COMMON "-lSystem")
  endif()
- set(LINKER_FLAGS_COMMON_DARWIN "-lSystem")
 
  # Turn off linking to compiler's default libc, in case jerry-libc or external is used
  if(NOT USE_LIBC STREQUAL "COMPILER")
@@ -212,10 +208,6 @@ project (Jerry C ASM)
  if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug") AND ${STRIP_RELEASE_BINARY} STREQUAL "ON")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
  endif()
-
-# Platform-specific configuration
- set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
- set(SOURCE_JERRY_STANDALONE_MAIN ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
 
 # User-defined linker-flags
  if (DEFINED USER_DEFINED_LINKER_FLAGS AND NOT ${USER_DEFINED_LINKER_FLAGS} STREQUAL "UNDEFINED")

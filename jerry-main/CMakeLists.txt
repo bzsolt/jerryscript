@@ -21,15 +21,9 @@ set(JERRY_NAME    jerry)
 # Sources
  # Platform-specific
   # Jerry standalone
-   # Linux
-    set(SOURCE_JERRY_STANDALONE_MAIN_LINUX main-unix.c)
-
-   # Darwin
-    set(SOURCE_JERRY_STANDALONE_MAIN_DARWIN main-unix.c)
-
-# Platform-specific configuration
- set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${LINKER_FLAGS_COMMON_${PLATFORM_EXT}}")
-
+   if(${PLATFORM} STREQUAL "LINUX" OR ${PLATFORM} STREQUAL "DARWIN" OR ${PLATFORM} STREQUAL "OPENWRT")
+    set(SOURCE_JERRY_STANDALONE_MAIN main-unix.c)
+   endif()
 
  # Generage map file
   if("${PLATFORM}" STREQUAL "DARWIN")
@@ -45,7 +39,7 @@ set(JERRY_NAME    jerry)
       ${CMAKE_SOURCE_DIR}/jerry-core)
 
 if(NOT ${EXTERNAL_BUILD})
-  add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN_${PLATFORM_EXT}})
+  add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN})
   set_property(TARGET ${JERRY_NAME}
                    PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
   set_property(TARGET ${JERRY_NAME}
