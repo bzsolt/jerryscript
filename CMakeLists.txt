@@ -92,8 +92,6 @@ project (Jerry C ASM)
   set(INCLUDE_LIBC_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
  endif()
 
-
-
  if(CMAKE_COMPILER_IS_GNUCC)
   if(ENABLE_LTO)
    # Use gcc-ar and gcc-ranlib to support LTO
@@ -113,18 +111,14 @@ project (Jerry C ASM)
  endif()
 
 # Are there any interfaces for external libraries, other than libc, that should be registered?
- if(DEFINED EXTERNAL_LIBS_INTERFACE AND NOT EXTERNAL_LIBS_INTERFACE STREQUAL "UNDEFINED")
-  set(INCLUDE_EXTERNAL_LIBS_INTERFACE )
-
+ if(NOT EXTERNAL_LIBS_INTERFACE STREQUAL "UNDEFINED")
   foreach(EXTERNAL_LIB_INTERFACE ${EXTERNAL_LIBS_INTERFACE})
    if (NOT EXISTS "${EXTERNAL_LIB_INTERFACE}")
     message(FATAL_ERROR "Interface directory of the external library doesn't exist: ${EXTERNAL_LIB_INTERFACE}")
    endif()
-
    set(INCLUDE_EXTERNAL_LIBS_INTERFACE ${INCLUDE_EXTERNAL_LIBS_INTERFACE} ${EXTERNAL_LIB_INTERFACE})
   endforeach()
  endif()
-
 
 # Compiler / Linker flags
  set(COMPILE_FLAGS_COMMON "-fno-builtin")
@@ -154,14 +148,9 @@ project (Jerry C ASM)
  # Debug information
   set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -g -gdwarf-4")
 
- # Warnings todo: nem kell a macro
-  macro(append variable value)
-    set(${variable} "${${variable}} ${value}")
-  endmacro()
-
   macro(add_jerry_compile_flags)
     foreach(_flag ${ARGV})
-      append(COMPILE_FLAGS_COMMON ${_flag})
+      set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${_flag}")
     endforeach()
   endmacro()
 
@@ -191,6 +180,12 @@ project (Jerry C ASM)
     endforeach()
   endif()
 
+  if(DEFINED EXTERNAL_LINKER_FLAGS)
+    foreach(FLAG ${EXTERNAL_LINKER_FLAGS})
+      set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${FLAG}")
+    endforeach()
+  endif()
+
  # Static build
   if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
    set(LINKER_FLAGS_STATIC "-static")
@@ -202,16 +197,6 @@ project (Jerry C ASM)
 # Strip binary
  if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND ENABLE_STRIP)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
- endif()
-
-# User-defined linker-flags
- if (DEFINED USER_DEFINED_LINKER_FLAGS AND NOT ${USER_DEFINED_LINKER_FLAGS} STREQUAL "UNDEFINED")
-  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${USER_DEFINED_LINKER_FLAGS}")
- endif()
-
-# User-defined compile-flags
- if (DEFINED USER_DEFINED_COMPILE_FLAGS AND NOT ${USER_DEFINED_COMPILE_FLAGS} STREQUAL "UNDEFINED")
-  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${USER_DEFINED_COMPILE_FLAGS}")
  endif()
 
 # Jerry's libc

@@ -75,8 +75,8 @@ def generate_build_options(arguments):
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
 
     build_options.extend(args_or_empty_list(arguments.cmake_param))
-    build_options.append('-DUSER_DEFINED_COMPILE_FLAGS=' + ' '.join(args_or_empty_list(arguments.compile_flag)))
-    build_options.append('-DUSER_DEFINED_LINKER_FLAGS=' + ' '.join(args_or_empty_list(arguments.linker_flag)))
+    build_options.append('-DEXTERNAL_COMPILE_FLAGS=' + ' '.join(args_or_empty_list(arguments.compile_flag)))
+    build_options.append('-DEXTERNAL_LINKER_FLAGS=' + ' '.join(args_or_empty_list(arguments.linker_flag)))
 
     return build_options
 
