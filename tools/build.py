@@ -71,7 +71,7 @@ def generate_build_options(arguments):
     build_options.append('-DFEATURE_MEM_STRESS_TEST=%s' % arguments.mem_stress_test)
     build_options.append('-DENABLE_ALL_IN_ONE=%s' % arguments.all_in_one.upper())
     build_options.append('-DENABLE_LTO=%s' % arguments.lto.upper())
-    build_options.append('-DSTRIP_RELEASE_BINARY=%s' % arguments.strip.upper())
+    build_options.append('-DENABLE_STRIP=%s' % arguments.strip.upper())
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
 
     build_options.extend(args_or_empty_list(arguments.cmake_param))

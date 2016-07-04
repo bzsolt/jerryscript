@@ -35,14 +35,14 @@ project (Jerry C ASM)
  set(USE_LIBC          "JERRY"   CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
  set(ENABLE_LTO        OFF       CACHE BOOL   "Enable LTO build?")
  set(ENABLE_ALL_IN_ONE ON        CACHE BOOL   "Enable all-in-one build?")
-
-
-# Compile/link flags
- # build mode specific compile/link flags
+ set(ENABLE_STRIP      ON        CACHE BOOL   "Discards all symbols from object files?")
 
  if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
  endif()
+
+# Compile/link flags
+ # build mode specific compile/link flags
 
  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   if(BUILD_UNITTESTS STREQUAL "ON")
@@ -52,11 +52,11 @@ project (Jerry C ASM)
    set(CMAKE_C_FLAGS_RELEASE "-Os")
  endif()
 
-# Architecture-specific compile/link flags
- foreach(FLAG ${FLAGS_COMMON_ARCH})
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
- endforeach()
+ # Architecture-specific compile/link flags
+  foreach(FLAG ${FLAGS_COMMON_ARCH})
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
+  endforeach()
 
 # Setup directories
  # Project binary dir
@@ -72,18 +72,14 @@ project (Jerry C ASM)
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
  if("${PLATFORM}" STREQUAL "LINUX")
-  option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  elseif("${PLATFORM}" STREQUAL "DARWIN")
   set(ENABLE_LTO        OFF  CACHE BOOL "Enable LTO build?")
   set(ENABLE_ALL_IN_ONE ON   CACHE BOOL "Enable all-in-one build?")
-
-  option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
 
  elseif("${PLATFORM}" STREQUAL "EXTERNAL")
   set(EXTERNAL_LIBS_INTERFACE "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
   set(EXTERNAL_MEM_HEAP_SIZE_KB "256" CACHE STRING "Size of memory heap, in kilobytes")
  elseif("${PLATFORM}" STREQUAL "OPENWRT")
-  option(STRIP_RELEASE_BINARY "Strip symbols from release binaries" ON)
  else()
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
  endif()
@@ -206,7 +202,7 @@ project (Jerry C ASM)
   set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
 # Strip binary
- if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug") AND ${STRIP_RELEASE_BINARY} STREQUAL "ON")
+ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND ENABLE_STRIP)
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
  endif()
 
