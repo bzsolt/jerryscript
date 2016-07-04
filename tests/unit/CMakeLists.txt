@@ -34,9 +34,9 @@ project (Unittest C)
 
     add_executable(${TARGET_NAME} ${SOURCE_UNIT_TEST_MAIN})
     set_property(TARGET ${TARGET_NAME}
-                 PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
+                 PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
     set_property(TARGET ${TARGET_NAME}
-                PROPERTY LINK_FLAGS "${COMPILE_FLAGS_JERRY} ${LINKER_FLAGS_COMMON}")
+                PROPERTY LINK_FLAGS "${COMPILE_FLAGS_COMMON} ${LINKER_FLAGS_COMMON}")
     target_include_directories(${TARGET_NAME} PRIVATE ${INCLUDE_CORE_INTERFACE})
     target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
 

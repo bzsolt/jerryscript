@@ -132,7 +132,7 @@ project (Jerry C ASM)
 
 
 # Compiler / Linker flags
- set(COMPILE_FLAGS_JERRY "-fno-builtin")
+ set(COMPILE_FLAGS_COMMON "-fno-builtin")
  if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
   set(LINKER_FLAGS_COMMON "-Wl,-z,noexecstack")
  else()
@@ -146,18 +146,18 @@ project (Jerry C ASM)
 
  # LTO
   if(ENABLE_LTO)
-   set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -flto")
+   set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -flto")
    if(NOT ("${PLATFORM}" STREQUAL "DARWIN") AND CMAKE_COMPILER_IS_GNUCC)
-    set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -fno-fat-lto-objects")
+    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-fat-lto-objects")
    endif()
    set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
   endif()
 
  # Turn off stack protector
-  set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -fno-stack-protector")
+  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-stack-protector")
 
  # Debug information
-  set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} -g -gdwarf-4")
+  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -g -gdwarf-4")
 
  # Warnings todo: nem kell a macro
   macro(append variable value)
@@ -166,7 +166,7 @@ project (Jerry C ASM)
 
   macro(add_jerry_compile_flags)
     foreach(_flag ${ARGV})
-      append(COMPILE_FLAGS_JERRY ${_flag})
+      append(COMPILE_FLAGS_COMMON ${_flag})
     endforeach()
   endmacro()
 
@@ -192,7 +192,7 @@ project (Jerry C ASM)
 
   if(DEFINED EXTERNAL_COMPILE_FLAGS)
     foreach(FLAG ${EXTERNAL_COMPILE_FLAGS})
-      set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} ${FLAG}")
+      set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${FLAG}")
     endforeach()
   endif()
 
@@ -216,7 +216,7 @@ project (Jerry C ASM)
 
 # User-defined compile-flags
  if (DEFINED USER_DEFINED_COMPILE_FLAGS AND NOT ${USER_DEFINED_COMPILE_FLAGS} STREQUAL "UNDEFINED")
-  set(COMPILE_FLAGS_JERRY "${COMPILE_FLAGS_JERRY} ${USER_DEFINED_COMPILE_FLAGS}")
+  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${USER_DEFINED_COMPILE_FLAGS}")
  endif()
 
 # Jerry's libc

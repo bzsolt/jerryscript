@@ -19,7 +19,7 @@ set(JERRY_LIBM_NAME    jerry-libm)
 project (${JERRY_LIBM_NAME} C)
 
 # Compiler / linker flags
-set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_JERRY} ${C_FLAGS_JERRY}")
+set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-error=sign-compare")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-error=sign-conversion")
 set(COMPILE_FLAGS_LIBM "${COMPILE_FLAGS_LIBM} -Wno-sign-conversion")

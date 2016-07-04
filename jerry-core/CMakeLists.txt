@@ -216,7 +216,7 @@ project (${JERRY_CORE_NAME} C ASM)
 
  add_library(${JERRY_CORE_NAME} STATIC ${SOURCE_CORE})
  set_property(TARGET ${JERRY_CORE_NAME}
-              PROPERTY COMPILE_FLAGS "${C_FLAGS_CORE} ${COMPILE_FLAGS_JERRY}")
+              PROPERTY COMPILE_FLAGS "${C_FLAGS_CORE} ${COMPILE_FLAGS_COMMON}")
  target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
  #target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
