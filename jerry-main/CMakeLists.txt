@@ -19,11 +19,8 @@ project (Jerry C)
 set(JERRY_NAME    jerry)
 
 # Sources
- # Platform-specific
   # Jerry standalone
-   if(${PLATFORM} STREQUAL "LINUX" OR ${PLATFORM} STREQUAL "DARWIN" OR ${PLATFORM} STREQUAL "OPENWRT")
-    set(SOURCE_JERRY_STANDALONE_MAIN main-unix.c)
-   endif()
+  set(SOURCE_JERRY_STANDALONE_MAIN main-unix.c)
 
  # Generage map file
   if("${PLATFORM}" STREQUAL "DARWIN")
@@ -38,7 +35,6 @@ set(JERRY_NAME    jerry)
  # Core interface
   set(INCLUDE_CORE_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-core)
 
-if(NOT "${PLATFORM}" STREQUAL "EXTERNAL")
   add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN})
   set_property(TARGET ${JERRY_NAME}
                    PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_COMMON} ${C_FLAGS_COMMON}")
@@ -61,4 +57,3 @@ if(NOT "${PLATFORM}" STREQUAL "EXTERNAL")
   endif()
 
   target_link_libraries(${JERRY_NAME} ${JERRY_LIBS})
-endif()

@@ -79,12 +79,8 @@ project (Jerry C ASM)
 # Compile/link flags
  # build mode specific compile/link flags
 
- if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  if(BUILD_UNITTESTS STREQUAL "ON")
-   set(CMAKE_C_FLAGS_DEBUG "-O3")
-  endif()
- else()
-   set(CMAKE_C_FLAGS_RELEASE "-Os")
+ if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CMAKE_C_FLAGS_RELEASE "-Os")
  endif()
 
  # Architecture-specific compile/link flags
@@ -110,7 +106,7 @@ project (Jerry C ASM)
  if(CMAKE_COMPILER_IS_GNUCC)
   if(ENABLE_LTO)
    # Use gcc-ar and gcc-ranlib to support LTO
-   set (CMAKE_AR "gcc-ar")
+   set(CMAKE_AR "gcc-ar")
    set(CMAKE_RANLIB "gcc-ranlib")
   endif()
  endif()
@@ -201,7 +197,7 @@ project (Jerry C ASM)
     endforeach()
   endif()
 
- # Static build
+ # Disable static build
   if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
    set(LINKER_FLAGS_STATIC "-static")
   endif()

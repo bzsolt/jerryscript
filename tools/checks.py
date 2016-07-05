@@ -25,7 +25,7 @@ optparser.add_argument('-v', '--verbose', action='store_true', default=False, he
 args = optparser.parse_args()
 
 def run_check(scriptname, filename=''):
-    script = TOOLS_DIR + scriptname
+    script = TOOLS_DIR + scriptname # path.join
     script_output = subprocess.check_output(script, stderr=subprocess.STDOUT)
 
     if args.verbose:
@@ -33,9 +33,10 @@ def run_check(scriptname, filename=''):
         log_target.write(script_output)
     else:
         if filename:
-            log_file = path.normpath(BUILD_DIR + filename)
+            log_file = path.normpath(BUILD_DIR + filename) # path.join
             log_target = open(log_file, 'w')
             log_target.write(script_output)
+            log_target.close()
 
 
 run_check('check-signed-off.sh')

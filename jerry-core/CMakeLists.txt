@@ -124,10 +124,6 @@ project (${JERRY_CORE_NAME} C ASM)
      ${CMAKE_CURRENT_SOURCE_DIR}/parser/regexp
      ${CMAKE_CURRENT_SOURCE_DIR}/jrt)
 
- # Third-party
-  # Valgrind
-   set(INCLUDE_THIRD_PARTY_VALGRIND ${CMAKE_SOURCE_DIR}/third-party/valgrind)
-
 # Sources
  # Jerry core
   file(GLOB SOURCE_CORE_API                   *.c)
@@ -156,9 +152,8 @@ project (${JERRY_CORE_NAME} C ASM)
       ${SOURCE_CORE_JRT})
 
  # Jerry port
- if(NOT ("${PORT_DIR}" STREQUAL ""))
-  file(GLOB SOURCE_PORT_FILES ${PORT_DIR}/*.c)
- endif()
+ file(GLOB SOURCE_PORT_FILES ${PORT_DIR}/*.c)
+
 
  # All-in-one build
  if("${ENABLE_ALL_IN_ONE}" STREQUAL "ON")
@@ -174,7 +169,7 @@ project (${JERRY_CORE_NAME} C ASM)
    file(APPEND ${ALL_IN_FILE} "#include \"${FILE}\"\n")
   endforeach()
 
-  set(SOURCE_CORE ${ALL_IN_FILE})
+  set(SOURCE_CORE ${ALL_IN_FILE} ${SOURCE_PORT_FILES})
  else()
   set(SOURCE_CORE ${SOURCE_CORE_FILES} ${SOURCE_PORT_FILES})
  endif()
@@ -189,6 +184,11 @@ project (${JERRY_CORE_NAME} C ASM)
   if("${FEATURE_MEM_STATS}" STREQUAL "ON")
    set(DEFINES_JERRY ${DEFINES_JERRY} JMEM_STATS)
   endif()
+
+
+ # Third-party
+  # Valgrind
+   set(INCLUDE_THIRD_PARTY_VALGRIND ${CMAKE_SOURCE_DIR}/third-party/valgrind)
 
  # Valgrind
  if("${FEATURE_VALGRIND}" STREQUAL "ON")

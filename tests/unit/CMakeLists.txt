@@ -30,7 +30,6 @@ project (Unittest C)
    file(GLOB SOURCE_UNIT_TEST_MAIN_MODULES *.c)
 
 # Unit tests declaration
-  if(("${PLATFORM}" STREQUAL "LINUX") OR ("${PLATFORM}" STREQUAL "DARWIN"))
    add_custom_target(unittests)
 
    foreach(SOURCE_UNIT_TEST_MAIN ${SOURCE_UNIT_TEST_MAIN_MODULES})
@@ -61,4 +60,3 @@ project (Unittest C)
 
     add_dependencies(unittests ${TARGET_NAME})
    endforeach()
-  endif()

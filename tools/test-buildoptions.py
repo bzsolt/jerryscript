@@ -24,7 +24,14 @@ optparser.add_argument('-v', '--verbose', action='store_true', default=False, he
 args = optparser.parse_args()
 
 # TODO: Should add a flag for COMPILER_DEFAULT_LIBC
-option_list = ['--lto', '--log', '--error-messages', '--all-in-one', '--valgrind', '--valgrind-freya'];
+option_list = [
+               '--lto',
+               '--log',
+               '--error-messages',
+               '--all-in-one',
+               '--valgrind',
+               '--valgrind-freya',
+              ]
 
 for option in option_list:
     script_output = subprocess.check_output([BUILD_SCRIPT, option, 'on', '--clean', '--unittests', '-v'], stderr=subprocess.STDOUT)
@@ -35,3 +42,4 @@ for option in option_list:
         log_target = open(BUILD_LOG, 'w')
 
     log_target.write(script_output)
+    log_target.close()
