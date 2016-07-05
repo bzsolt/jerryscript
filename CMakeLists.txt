@@ -207,7 +207,7 @@ project (Jerry C ASM)
   endif()
 
  # C
-  set(C_FLAGS_JERRY "-std=c99 -pedantic")
+  set(C_FLAGS_COMMON "-std=c99 -pedantic")
 
 # Strip binary
  if(ENABLE_STRIP AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
