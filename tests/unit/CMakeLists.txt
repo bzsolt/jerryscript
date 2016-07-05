@@ -51,15 +51,13 @@ project (Unittest C)
 
     if(BUILD_JERRY_LIBM STREQUAL "ON")
      set(JERRY_LIBS ${JERRY_LIBS} jerry-libm)
-    else()
-     set(REQUIRED_LIBS m)
     endif()
 
     if(${USE_LIBC} STREQUAL "JERRY")
      set(JERRY_LIBS ${JERRY_LIBS} jerry-libc)
     endif()
 
-    target_link_libraries(${TARGET_NAME} ${JERRY_LIBS} ${REQUIRED_LIBS})
+    target_link_libraries(${TARGET_NAME} ${JERRY_LIBS})
 
     add_dependencies(unittests ${TARGET_NAME})
    endforeach()
