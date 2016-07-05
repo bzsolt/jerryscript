@@ -17,7 +17,6 @@ cmake_minimum_required (VERSION 2.8.12)
 project (Jerry C ASM)
 
 # Determining platform
- message(${CMAKE_SYSTEM_NAME})
  set(PLATFORM "${CMAKE_SYSTEM_NAME}")
  string(TOUPPER "${PLATFORM}" PLATFORM)
 
@@ -48,6 +47,22 @@ project (Jerry C ASM)
   set(ENABLE_ALL_IN_ONE "ON")
  endif()
 
+ # Status messages
+ message(STATUS "CMAKE_SYSTEM_NAME         " ${CMAKE_SYSTEM_NAME})
+ message(STATUS "CMAKE_SYSTEM_PROCESSOR    " ${CMAKE_SYSTEM_PROCESSOR})
+ message(STATUS "CMAKE_BUILD_TYPE          " ${CMAKE_BUILD_TYPE})
+ message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
+ message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
+ message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
+ message(STATUS "BUILD_JERRY               " ${BUILD_JERRY})
+ message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
+ message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
+ message(STATUS "USE_LIBC                  " ${USE_LIBC})
+ message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
+ message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
+ message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
+ message(STATUS "EXTERNAL_LIBS_INTERFACE   " ${EXTERNAL_LIBS_INTERFACE})
+
 # Setup directories
  # Project binary dir
  set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
@@ -60,21 +75,6 @@ project (Jerry C ASM)
 
  # Archive targets output Directory
  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
-
- # Status messages
- message(STATUS "CMAKE_BUILD_TYPE          " ${CMAKE_BUILD_TYPE})
- message(STATUS "CMAKE_SYSTEM_NAME         " ${CMAKE_SYSTEM_NAME})
- message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
- message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
- message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
- message(STATUS "BUILD_JERRY               " ${BUILD_JERRY})
- message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
- message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
- message(STATUS "USE_LIBC                  " ${USE_LIBC})
- message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
- message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
- message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
- message(STATUS "EXTERNAL_LIBS_INTERFACE   " ${EXTERNAL_LIBS_INTERFACE})
 
 # Compile/link flags
  # build mode specific compile/link flags
@@ -210,7 +210,7 @@ project (Jerry C ASM)
   set(C_FLAGS_JERRY "-std=c99 -pedantic")
 
 # Strip binary
- if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND ENABLE_STRIP)
+ if(ENABLE_STRIP AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
  endif()
 

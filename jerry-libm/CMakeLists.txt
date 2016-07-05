@@ -38,7 +38,5 @@ set_property(TARGET ${JERRY_LIBM_NAME}
              PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBM}")
 
 target_include_directories(${JERRY_LIBM_NAME} PRIVATE ${INCLUDE_LIBM})
+target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
 
-#if(BUILD_UNITTESTS STREQUAL "ON")
- target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
-#endif()

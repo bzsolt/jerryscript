@@ -219,7 +219,6 @@ project (${JERRY_CORE_NAME} C ASM)
               PROPERTY COMPILE_FLAGS "${C_FLAGS_CORE} ${COMPILE_FLAGS_COMMON}")
  target_compile_definitions(${JERRY_CORE_NAME} PRIVATE ${DEFINES_JERRY})
  target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_CORE})
- #target_include_directories(${JERRY_CORE_NAME} PRIVATE ${INCLUDE_LIBM})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_LIBC_INTERFACE})
  target_include_directories(${JERRY_CORE_NAME} SYSTEM PRIVATE ${INCLUDE_EXTERNAL_LIBS_INTERFACE})
 

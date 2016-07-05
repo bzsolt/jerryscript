@@ -21,11 +21,11 @@ project (${JERRY_LIBC_NAME} C)
 # Compiler / linker flags
 set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
 
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-   set(DEFINES_LIBC DEBUG)
-  else()
-   set(DEFINES_LIBC NDEBUG)
-  endif()
+ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(DEFINES_LIBC DEBUG)
+ else()
+  set(DEFINES_LIBC NDEBUG)
+ endif()
 
  # Architecture-specific configuration
   if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
@@ -40,13 +40,6 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
    message(FATAL_ERROR "Unsupported machine architecture")
   endif()
 
- # Platform-specific
-  # Linux
-   set(DEFINES_LIBC_LINUX __TARGET_HOST)
-  # Darwin
-   set(DEFINES_LIBC_DARWIN __TARGET_HOST)
-
-
 # Include directories
  set(INCLUDE_LIBC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -60,9 +53,6 @@ set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_COMMON} ${C_FLAGS_JERRY}")
    set(INCLUDE_LIBC ${INCLUDE_LIBC} __TARGET_HOST)
    set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST)
   endif()
-
-# Platform-specific configuration
- set(DEFINES_LIBC ${DEFINES_LIBC} ${DEFINES_LIBC_BUILD_MODE})
 
  add_library(${JERRY_LIBC_NAME} STATIC ${SOURCE_LIBC} ${TARGET_SPECIFIC_LIBC_SOURCE})
  set_property(TARGET ${JERRY_LIBC_NAME} PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBC}")

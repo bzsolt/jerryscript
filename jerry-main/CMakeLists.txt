@@ -27,16 +27,16 @@ set(JERRY_NAME    jerry)
 
  # Generage map file
   if("${PLATFORM}" STREQUAL "DARWIN")
-   set(MAP_FILE_FLAGS "-Xlinker -map -Xlinker jerry.map")
+   set(MAP_FILE_FLAGS "-Xlinker -map")
   else()
-   set(MAP_FILE_FLAGS "-Xlinker -Map -Xlinker jerry.map")
+   set(MAP_FILE_FLAGS "-Xlinker -Map")
   endif()
+  set(MAP_FILE_FLAGS "${MAP_FILE_FLAGS} -Xlinker jerry.map")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${MAP_FILE_FLAGS}")
 
 # Include directories
  # Core interface
-  set(INCLUDE_CORE_INTERFACE
-      ${CMAKE_SOURCE_DIR}/jerry-core)
+  set(INCLUDE_CORE_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-core)
 
 if(NOT "${PLATFORM}" STREQUAL "EXTERNAL")
   add_executable(${JERRY_NAME} ${SOURCE_JERRY_STANDALONE_MAIN})
