@@ -44,14 +44,20 @@ project (${JERRY_CORE_NAME} C ASM)
  set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE})
 
  # Get version information from git
-  execute_process(COMMAND git symbolic-ref -q HEAD
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                  OUTPUT_VARIABLE JERRY_GIT_BRANCH
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND git rev-parse HEAD
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                  OUTPUT_VARIABLE JERRY_GIT_COMMIT
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/.git")
+   execute_process(COMMAND git symbolic-ref -q HEAD
+                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                   OUTPUT_VARIABLE JERRY_GIT_BRANCH
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+   execute_process(COMMAND git rev-parse HEAD
+                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                   OUTPUT_VARIABLE JERRY_GIT_COMMIT
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+  else()
+   set(JERRY_GIT_BRANCH "UNDEFINED")
+   set(JERRY_GIT_COMMIT "UNDEFINED")
+  endif()
+
  # Get build date
   execute_process(COMMAND date +%d/%m/%Y
                   OUTPUT_VARIABLE JERRY_BUILD_DATE
