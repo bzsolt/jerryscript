@@ -16,29 +16,12 @@
 # limitations under the License.
 
 import argparse
-import subprocess
-import sys
 from settings import *
 
 optparser = argparse.ArgumentParser()
 optparser.add_argument('-v', '--verbose', action='store_true', default=False, help='increase verbosity')
 args = optparser.parse_args()
 
-def run_check(scriptname, filename=''):
-    script = TOOLS_DIR + scriptname # path.join
-    script_output = subprocess.check_output(script, stderr=subprocess.STDOUT)
-
-    if args.verbose:
-        log_target = sys.stdout
-        log_target.write(script_output)
-    else:
-        if filename:
-            log_file = path.normpath(BUILD_DIR + filename) # path.join
-            log_target = open(log_file, 'w')
-            log_target.write(script_output)
-            log_target.close()
-
-
-run_check('check-signed-off.sh')
-run_check('check-vera.sh', 'vera.log')
-run_check('check-cppcheck.sh', 'cppcheck.log')
+run_check('check-signed-off.sh', args.verbose)
+run_check('check-vera.sh', args.verbose, 'vera.log')
+run_check('check-cppcheck.sh', args.verbose, 'cppcheck.log')

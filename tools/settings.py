@@ -16,10 +16,27 @@
 # limitations under the License.
 
 import os
+import subprocess
+import sys
 from os import path
 
-TOOLS_DIR = path.dirname(path.abspath(__file__)) + os.sep
-PROJECT_DIR = path.normpath(path.join(TOOLS_DIR, '../')) + os.sep
-BUILD_SCRIPT = TOOLS_DIR + 'build.py'
+TOOLS_DIR = path.dirname(path.abspath(__file__))
+PROJECT_DIR = path.normpath(path.join(TOOLS_DIR, '../'))
+BUILD_SCRIPT = path.join(TOOLS_DIR, 'build.py')
 BUILD_DIR = path.join(PROJECT_DIR, 'build/')
-BUILD_LOG = BUILD_DIR + 'build.log'
+BIN_DIR = path.join(BUILD_DIR, 'bin/')
+BUILD_LOG = path.join(BUILD_DIR, 'build.log')
+
+def run_check(scriptname, verbose, filename=''):
+    script = path.join(TOOLS_DIR, scriptname)
+    script_output = subprocess.check_output(script, stderr=subprocess.STDOUT)
+
+    if verbose:
+        log_target = sys.stdout
+        log_target.write(script_output)
+    else:
+        if filename:
+            log_file = path.join(BUILD_DIR, filename)
+            log_target = open(log_file, 'w')
+            log_target.write(script_output)
+            log_target.close()
