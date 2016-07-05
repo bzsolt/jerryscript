@@ -26,10 +26,26 @@ project (${JERRY_CORE_NAME} C ASM)
  set(FEATURE_VALGRIND_FREYA  OFF    CACHE BOOL   "Enable Valgrind-Freya support?")
  set(FEATURE_MEM_STRESS_TEST OFF    CACHE BOOL   "Enable mem-stress test?")
  set(FEATURE_MEM_STATS       OFF    CACHE BOOL   "Enable memory-statistics?")
+ set(MEM_HEAP_SIZE_KB        "512"  CACHE STRING "Size of memory heap, in kilobytes")
 
- if((NOT(FEATURE_PROFILE STREQUAL "full")) AND (BUILD_UNITTESTS STREQUAL "ON"))
-  message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported with BUILD_UNITTESTS=ON option")
+
+ math(EXPR MAX_MEM_HEAP_AREA_SIZE "512 * 1024")
+ math(EXPR MEM_HEAP_AREA_SIZE "${MEM_HEAP_SIZE_KB} * 1024")
+ if (MEM_HEAP_AREA_SIZE GREATER MAX_MEM_HEAP_AREA_SIZE)
+  message(FATAL_ERROR "The MEM_HEAP_SIZE_KB: ${MEM_HEAP_SIZE_KB} is not supported. Currently, maximum 512 kilobytes heap size is supported")
+ else()
+  set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE})
  endif()
+
+ # Status messages
+ message(STATUS "FEATURE_PROFILE           " ${FEATURE_PROFILE})
+ message(STATUS "FEATURE_ERROR_MESSAGES    " ${FEATURE_ERROR_MESSAGES})
+ message(STATUS "FEATURE_LOG               " ${FEATURE_LOG})
+ message(STATUS "FEATURE_VALGRIND          " ${FEATURE_VALGRIND})
+ message(STATUS "FEATURE_VALGRIND_FREYA    " ${FEATURE_VALGRIND_FREYA})
+ message(STATUS "FEATURE_MEM_STRESS_TEST   " ${FEATURE_MEM_STRESS_TEST})
+ message(STATUS "FEATURE_MEM_STATS         " ${FEATURE_MEM_STATS})
+ message(STATUS "MEM_HEAP_SIZE_KB          " ${MEM_HEAP_SIZE_KB})
 
 # Definitions
  # Get version information from git
@@ -92,15 +108,6 @@ project (${JERRY_CORE_NAME} C ASM)
   else()
    message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported")
   endif()
-
- # Platform-specific
-  # Linux
-
-  # External
-   if(DEFINED EXTERNAL_MEM_HEAP_SIZE_KB)
-    math(EXPR MEM_HEAP_AREA_SIZE_EXTERNAL "${EXTERNAL_MEM_HEAP_SIZE_KB} * 1024")
-    set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE_EXTERNAL})
-   endif()
 
 # Include directories
  set(INCLUDE_CORE

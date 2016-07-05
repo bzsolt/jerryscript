@@ -35,15 +35,6 @@
 #define CONFIG_MEM_POOL_CHUNK_SIZE (8)
 
 /**
- * Size of heap
- */
-#ifndef CONFIG_MEM_HEAP_AREA_SIZE
-# define CONFIG_MEM_HEAP_AREA_SIZE (512 * 1024)
-#elif CONFIG_MEM_HEAP_AREA_SIZE > (512 * 1024)
-# error "Currently, maximum 512 kilobytes heap size is supported"
-#endif /* !CONFIG_MEM_HEAP_AREA_SIZE */
-
-/**
  * Max heap usage limit
  */
 #define CONFIG_MEM_HEAP_MAX_LIMIT 8192

@@ -16,6 +16,11 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Unittest C)
 
+
+ if(NOT(FEATURE_PROFILE STREQUAL "full") AND (BUILD_UNITTESTS STREQUAL "ON"))
+  message(FATAL_ERROR "FEATURE_PROFILE='${FEATURE_PROFILE}' doesn't supported with BUILD_UNITTESTS=ON option")
+ endif()
+
 # Include directories
  # Core interface
   set(INCLUDE_CORE_INTERFACE

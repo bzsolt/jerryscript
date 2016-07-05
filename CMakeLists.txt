@@ -17,6 +17,7 @@ cmake_minimum_required (VERSION 2.8.12)
 project (Jerry C ASM)
 
 # Determining platform
+ message(${CMAKE_SYSTEM_NAME})
  set(PLATFORM "${CMAKE_SYSTEM_NAME}")
  string(TOUPPER "${PLATFORM}" PLATFORM)
 
@@ -47,9 +48,33 @@ project (Jerry C ASM)
   set(ENABLE_ALL_IN_ONE "ON")
  endif()
 
- if("${PLATFORM}" STREQUAL "EXTERNAL")
-  set(EXTERNAL_MEM_HEAP_SIZE_KB "256"      CACHE STRING "Size of memory heap, in kilobytes")
- endif()
+# Setup directories
+ # Project binary dir
+ set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
+
+ # Library output directory
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+
+ # Executable output directory
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
+
+ # Archive targets output Directory
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+
+ # Status messages
+ message(STATUS "CMAKE_BUILD_TYPE          " ${CMAKE_BUILD_TYPE})
+ message(STATUS "CMAKE_SYSTEM_NAME         " ${CMAKE_SYSTEM_NAME})
+ message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
+ message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
+ message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
+ message(STATUS "BUILD_JERRY               " ${BUILD_JERRY})
+ message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
+ message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
+ message(STATUS "USE_LIBC                  " ${USE_LIBC})
+ message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
+ message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
+ message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
+ message(STATUS "EXTERNAL_LIBS_INTERFACE   " ${EXTERNAL_LIBS_INTERFACE})
 
 # Compile/link flags
  # build mode specific compile/link flags
@@ -67,19 +92,6 @@ project (Jerry C ASM)
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
   endforeach()
-
-# Setup directories
- # Project binary dir
- set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
-
- # Library output directory
- set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
-
- # Executable output directory
- set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
-
- # Archive targets output Directory
- set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
  if (NOT "${PLATFORM}" MATCHES "^(LINUX|DARWIN|EXTERNAL|OPENWRT)$")
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
