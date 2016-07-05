@@ -16,18 +16,10 @@
 # limitations under the License.
 
 import argparse
-import os
 import subprocess
 import sys
-from os import path
 from os import makedirs
-
-def join_path(pathes):
-    return path.abspath(reduce(lambda x, y: path.join(x, y), pathes))
-
-SCRIPT_PATH = path.dirname(path.abspath(__file__))
-PROJECT_DIR = join_path([SCRIPT_PATH, '../'])
-BUILD_DIR = join_path([PROJECT_DIR, 'tmp/'])
+from settings import *
 
 def add_build_args(parser):
     parser.add_argument('--verbose', '-v', action='store_true', default=False, help='Increase verbosity')
@@ -44,18 +36,18 @@ def add_build_args(parser):
     parser.add_argument('--valgrind-freya', choices=['on', 'off'], default='off', help='Enable Valgrind-Freya support (default: %(default)s)')
     parser.add_argument('--mem-stats', choices=['on', 'off'], default='off', help='Enable memory-statistics (default: %(default)s)')
     parser.add_argument('--mem-stress-test', choices=['on', 'off'], default='off', help='Enable mem-stress test (default: %(default)s)')
-    parser.add_argument('--cmake-param', action='append', help='Add custom arguments to CMake')
-    parser.add_argument('--compile-flag', action='append', help='Add custom compile flag')
-    parser.add_argument('--linker-flag', action='append', help='Add custom linker flag')
+    parser.add_argument('--cmake-param', action='append', default=[], help='Add custom arguments to CMake')
+    parser.add_argument('--compile-flag', action='append', default=[], help='Add custom compile flag')
+    parser.add_argument('--linker-flag', action='append', default=[], help='Add custom linker flag')
+    parser.add_argument('--toolchain', action='store', default='', help='Add toolchain file')
+
+    # TODO: Allow to switch between default and jerry libc
 
 def get_arguments():
     parser = argparse.ArgumentParser()
     add_build_args(parser)
 
     return parser.parse_args()
-
-def args_or_empty_list(arguments):
-    return (arguments if arguments else [])
 
 def generate_build_options(arguments):
     build_options = []
@@ -74,9 +66,12 @@ def generate_build_options(arguments):
     build_options.append('-DENABLE_STRIP=%s' % arguments.strip.upper())
     build_options.append('-DBUILD_UNITTESTS=%s' % ('ON' if arguments.unittests else 'OFF'))
 
-    build_options.extend(args_or_empty_list(arguments.cmake_param))
-    build_options.append('-DEXTERNAL_COMPILE_FLAGS=' + ' '.join(args_or_empty_list(arguments.compile_flag)))
-    build_options.append('-DEXTERNAL_LINKER_FLAGS=' + ' '.join(args_or_empty_list(arguments.linker_flag)))
+    build_options.extend(arguments.cmake_param)
+    build_options.append('-DEXTERNAL_COMPILE_FLAGS=' + ' '.join(arguments.compile_flag))
+    build_options.append('-DEXTERNAL_LINKER_FLAGS=' + ' '.join(arguments.linker_flag))
+
+    if arguments.toolchain:
+        build_options.append('-DCMAKE_TOOLCHAIN_FILE=%s' % arguments.toolchain)
 
     return build_options
 
