@@ -24,11 +24,11 @@ project (Jerry C ASM)
  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
- set(BUILD_JERRY_CORE  ON  CACHE BOOL "Build jerry-core?")
- set(BUILD_JERRY_LIBC  ON  CACHE BOOL "Build jerry-libc?")
- set(BUILD_JERRY_LIBM  ON  CACHE BOOL "Build jerry-libm?")
- set(BUILD_JERRY       ON  CACHE BOOL "Build jerry command line tool?")
- set(BUILD_UNITTESTS   OFF CACHE BOOL "Build unit tests?")
+ set(BUILD_JERRY_CORE    ON  CACHE BOOL "Build jerry-core?")
+ set(BUILD_JERRY_LIBC    ON  CACHE BOOL "Build jerry-libc?")
+ set(BUILD_JERRY_LIBM    ON  CACHE BOOL "Build jerry-libm?")
+ set(BUILD_JERRY_CMDLINE ON  CACHE BOOL "Build jerry command line tool?")
+ set(BUILD_UNITTESTS     OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
  set(USE_PORT_DIR              "DEFAULT"   CACHE STRING "Should we use default or external port?")
@@ -54,7 +54,7 @@ project (Jerry C ASM)
  message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
  message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
  message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
- message(STATUS "BUILD_JERRY               " ${BUILD_JERRY})
+ message(STATUS "BUILD_JERRY_CMDLINE       " ${BUILD_JERRY_CMDLINE})
  message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
  message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
  message(STATUS "USE_LIBC                  " ${USE_LIBC})
@@ -226,7 +226,7 @@ project (Jerry C ASM)
  endif()
 
 # Jerry commandline tool
- if (BUILD_JERRY STREQUAL "ON")
+ if (BUILD_JERRY_CMDLINE STREQUAL "ON")
   add_subdirectory(jerry-main)
 endif()
 
