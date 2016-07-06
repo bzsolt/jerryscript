@@ -103,8 +103,14 @@ project (Jerry C ASM)
   set(INCLUDE_LIBC_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
  endif()
 
- if(CMAKE_COMPILER_IS_GNUCC)
-  if(ENABLE_LTO)
+ # LTO
+ if(ENABLE_LTO)
+  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -flto")
+  set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
+  if(CMAKE_COMPILER_IS_GNUCC)
+   if(NOT "${PLATFORM}" STREQUAL "DARWIN")
+    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-fat-lto-objects")
+   endif()
    # Use gcc-ar and gcc-ranlib to support LTO
    set(CMAKE_AR "gcc-ar")
    set(CMAKE_RANLIB "gcc-ranlib")
@@ -143,15 +149,6 @@ project (Jerry C ASM)
  if(NOT USE_LIBC STREQUAL "COMPILER")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
  endif()
-
- # LTO
-  if(ENABLE_LTO)
-   set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -flto")
-   if(NOT ("${PLATFORM}" STREQUAL "DARWIN") AND CMAKE_COMPILER_IS_GNUCC)
-    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-fat-lto-objects")
-   endif()
-   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
-  endif()
 
  # Turn off stack protector
   set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-stack-protector")

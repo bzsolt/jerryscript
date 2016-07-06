@@ -44,7 +44,7 @@ project (${JERRY_CORE_NAME} C ASM)
  set(DEFINES_JERRY ${DEFINES_JERRY} CONFIG_MEM_HEAP_AREA_SIZE=${MEM_HEAP_AREA_SIZE})
 
  # Get version information from git
-  if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/.git")
+  if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/.git")
    execute_process(COMMAND git symbolic-ref -q HEAD
                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                    OUTPUT_VARIABLE JERRY_GIT_BRANCH

@@ -18,6 +18,10 @@ project (Jerry C)
 
 set(JERRY_NAME    jerry)
 
+if(NOT ${USE_PORT_DIR} STREQUAL "DEFAULT")
+ message(FATAL_ERROR "JERRY_NAME is not supported with PORT_DIR: ${PORT_DIR}")
+endif()
+
 # Sources
   # Jerry standalone
   set(SOURCE_JERRY_STANDALONE_MAIN main-unix.c)
