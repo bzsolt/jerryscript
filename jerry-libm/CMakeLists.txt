@@ -15,7 +15,6 @@
 
 cmake_minimum_required (VERSION 2.8.12)
 set(JERRY_LIBM_NAME    jerry-libm)
-
 project (${JERRY_LIBM_NAME} C)
 
 # Compiler / linker flags
@@ -39,4 +38,3 @@ set_property(TARGET ${JERRY_LIBM_NAME}
 
 target_include_directories(${JERRY_LIBM_NAME} PRIVATE ${INCLUDE_LIBM})
 target_include_directories(${JERRY_LIBM_NAME} INTERFACE ${INCLUDE_LIBM})
-

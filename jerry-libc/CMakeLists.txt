@@ -15,48 +15,47 @@
 
 cmake_minimum_required (VERSION 2.8.12)
 set(JERRY_LIBC_NAME    jerry-libc)
-
 project (${JERRY_LIBC_NAME} C)
 
 # Compiler / linker flags
 set(COMPILE_FLAGS_LIBC "${COMPILE_FLAGS_COMMON} ${C_FLAGS_COMMON}")
 
- if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(DEFINES_LIBC DEBUG)
- else()
+else()
   set(DEFINES_LIBC NDEBUG)
- endif()
+endif()
 
- # Architecture-specific configuration
-  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-   set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_x64)
-  elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l-hf")
-   set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_ARMv7 __TARGET_HOST_ARMv7_HARD_FLOAT)
-  elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l-el")
-   set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_ARMv7 __TARGET_HOST_ARMv7_SOFT_FLOAT)
-  elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
-   set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_x86)
-  else()
-   message(FATAL_ERROR "Unsupported machine architecture")
-  endif()
+# Architecture-specific configuration
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+  set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_x64)
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l-hf")
+  set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_ARMv7 __TARGET_HOST_ARMv7_HARD_FLOAT)
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l-el")
+  set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_ARMv7 __TARGET_HOST_ARMv7_SOFT_FLOAT)
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+  set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST_x86)
+else()
+  message(FATAL_ERROR "Unsupported machine architecture")
+endif()
 
 # Include directories
- set(INCLUDE_LIBC ${CMAKE_CURRENT_SOURCE_DIR})
+set(INCLUDE_LIBC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Sources
- file(GLOB SOURCE_LIBC *.c)
+file(GLOB SOURCE_LIBC *.c)
 
- # Platform-specific
-  # Linux
-  if(DEFINED PLATFORM AND ((PLATFORM STREQUAL "LINUX") OR (PLATFORM STREQUAL "DARWIN")))
-   file(GLOB TARGET_SPECIFIC_LIBC_SOURCE target/posix/*.c target/posix/*.S)
-   set(INCLUDE_LIBC ${INCLUDE_LIBC} __TARGET_HOST)
-   set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST)
-  endif()
+# Platform-specific
+# Linux
+if(DEFINED PLATFORM AND ((PLATFORM STREQUAL "LINUX") OR (PLATFORM STREQUAL "DARWIN")))
+  file(GLOB TARGET_SPECIFIC_LIBC_SOURCE target/posix/*.c target/posix/*.S)
+  set(INCLUDE_LIBC ${INCLUDE_LIBC} __TARGET_HOST)
+  set(DEFINES_LIBC ${DEFINES_LIBC} __TARGET_HOST)
+endif()
 
- add_library(${JERRY_LIBC_NAME} STATIC ${SOURCE_LIBC} ${TARGET_SPECIFIC_LIBC_SOURCE})
- set_property(TARGET ${JERRY_LIBC_NAME} PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBC}")
+add_library(${JERRY_LIBC_NAME} STATIC ${SOURCE_LIBC} ${TARGET_SPECIFIC_LIBC_SOURCE})
+set_property(TARGET ${JERRY_LIBC_NAME} PROPERTY COMPILE_FLAGS "${COMPILE_FLAGS_LIBC}")
 
- target_compile_definitions(${JERRY_LIBC_NAME} PRIVATE ${DEFINES_LIBC})
- target_include_directories(${JERRY_LIBC_NAME} PRIVATE ${INCLUDE_LIBC})
- target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
+target_compile_definitions(${JERRY_LIBC_NAME} PRIVATE ${DEFINES_LIBC})
+target_include_directories(${JERRY_LIBC_NAME} PRIVATE ${INCLUDE_LIBC})
+target_include_directories(${JERRY_LIBC_NAME} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/jerry-libc/include)

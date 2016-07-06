@@ -17,217 +17,218 @@ cmake_minimum_required (VERSION 2.8.12)
 project (Jerry C ASM)
 
 # Determining platform
- set(PLATFORM "${CMAKE_SYSTEM_NAME}")
- string(TOUPPER "${PLATFORM}" PLATFORM)
+set(PLATFORM "${CMAKE_SYSTEM_NAME}")
+string(TOUPPER "${PLATFORM}" PLATFORM)
 
 # Remove rdynamic option
- set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
- set(BUILD_JERRY_CORE    ON  CACHE BOOL "Build jerry-core?")
- set(BUILD_JERRY_LIBC    ON  CACHE BOOL "Build jerry-libc?")
- set(BUILD_JERRY_LIBM    ON  CACHE BOOL "Build jerry-libm?")
- set(BUILD_JERRY_CMDLINE ON  CACHE BOOL "Build jerry command line tool?")
- set(BUILD_UNITTESTS     OFF CACHE BOOL "Build unit tests?")
+set(BUILD_JERRY_CORE    ON  CACHE BOOL "Build jerry-core?")
+set(BUILD_JERRY_LIBC    ON  CACHE BOOL "Build jerry-libc?")
+set(BUILD_JERRY_LIBM    ON  CACHE BOOL "Build jerry-libm?")
+set(BUILD_JERRY_CMDLINE ON  CACHE BOOL "Build jerry command line tool?")
+set(BUILD_UNITTESTS     OFF CACHE BOOL "Build unit tests?")
 
 # Optional build settings
- set(USE_PORT_DIR              "DEFAULT"   CACHE STRING "Should we use default or external port?")
- set(USE_LIBC                  "JERRY"     CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
- set(ENABLE_LTO                OFF         CACHE BOOL   "Enable LTO build?")
- set(ENABLE_ALL_IN_ONE         ON          CACHE BOOL   "Enable all-in-one build?")
- set(ENABLE_STRIP              ON          CACHE BOOL   "Discards all symbols from object files?")
- set(EXTERNAL_LIBS_INTERFACE   "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
+set(USE_PORT_DIR              "DEFAULT"   CACHE STRING "Should we use default or external port?")
+set(USE_LIBC                  "JERRY"     CACHE STRING "should we use jerry-libc, compiler-default or external libc?")
+set(ENABLE_LTO                OFF         CACHE BOOL   "Enable LTO build?")
+set(ENABLE_ALL_IN_ONE         ON          CACHE BOOL   "Enable all-in-one build?")
+set(ENABLE_STRIP              ON          CACHE BOOL   "Discards all symbols from object files?")
+set(EXTERNAL_LIBS_INTERFACE   "UNDEFINED" CACHE STRING "Path to external libraries' include directory")
 
- if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
- endif()
+endif()
 
- if("${PLATFORM}" STREQUAL "DARWIN")
+if("${PLATFORM}" STREQUAL "DARWIN")
   set(ENABLE_LTO "OFF")
   set(ENABLE_ALL_IN_ONE "ON")
- endif()
+endif()
 
- # Status messages
- message(STATUS "CMAKE_SYSTEM_NAME         " ${CMAKE_SYSTEM_NAME})
- message(STATUS "CMAKE_SYSTEM_PROCESSOR    " ${CMAKE_SYSTEM_PROCESSOR})
- message(STATUS "CMAKE_BUILD_TYPE          " ${CMAKE_BUILD_TYPE})
- message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
- message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
- message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
- message(STATUS "BUILD_JERRY_CMDLINE       " ${BUILD_JERRY_CMDLINE})
- message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
- message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
- message(STATUS "USE_LIBC                  " ${USE_LIBC})
- message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
- message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
- message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
- message(STATUS "EXTERNAL_LIBS_INTERFACE   " ${EXTERNAL_LIBS_INTERFACE})
+# Status messages
+message(STATUS "CMAKE_SYSTEM_NAME         " ${CMAKE_SYSTEM_NAME})
+message(STATUS "CMAKE_SYSTEM_PROCESSOR    " ${CMAKE_SYSTEM_PROCESSOR})
+message(STATUS "CMAKE_BUILD_TYPE          " ${CMAKE_BUILD_TYPE})
+message(STATUS "BUILD_JERRY_CORE          " ${BUILD_JERRY_CORE})
+message(STATUS "BUILD_JERRY_LIBC          " ${BUILD_JERRY_LIBC})
+message(STATUS "BUILD_JERRY_LIBM          " ${BUILD_JERRY_LIBM})
+message(STATUS "BUILD_JERRY_CMDLINE       " ${BUILD_JERRY_CMDLINE})
+message(STATUS "BUILD_UNITTESTS           " ${BUILD_UNITTESTS})
+message(STATUS "USE_PORT_DIR              " ${USE_PORT_DIR})
+message(STATUS "USE_LIBC                  " ${USE_LIBC})
+message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
+message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
+message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
+message(STATUS "EXTERNAL_LIBS_INTERFACE   " ${EXTERNAL_LIBS_INTERFACE})
 
 # Setup directories
- # Project binary dir
- set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
+# Project binary dir
+set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
 
- # Library output directory
- set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+# Library output directory
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
- # Executable output directory
- set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
+# Executable output directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/)
 
- # Archive targets output Directory
- set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+# Archive targets output Directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
 
 # Compile/link flags
- # build mode specific compile/link flags
+# build mode specific compile/link flags
 
- if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_C_FLAGS_RELEASE "-Os")
- endif()
+endif()
 
- # Architecture-specific compile/link flags
-  foreach(FLAG ${FLAGS_COMMON_ARCH})
-   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
-  endforeach()
+# Architecture-specific compile/link flags
+foreach(FLAG ${FLAGS_COMMON_ARCH})
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}")
+endforeach()
 
- if (NOT "${PLATFORM}" MATCHES "^(LINUX|DARWIN|EXTERNAL|OPENWRT)$")
+if(NOT "${PLATFORM}" MATCHES "^(LINUX|DARWIN|EXTERNAL|OPENWRT)$")
   message(FATAL_ERROR "Platform '${PLATFORM}' is not supported")
- endif()
+endif()
 
- #Should we use external libc?
- if(NOT ${USE_LIBC} STREQUAL "COMPILER" AND NOT ${USE_LIBC} STREQUAL "JERRY")
+#Should we use external libc?
+if(NOT ${USE_LIBC} STREQUAL "COMPILER" AND NOT ${USE_LIBC} STREQUAL "JERRY")
   if(NOT EXISTS "${USE_LIBC}/stdlib.h")
-   message(FATAL_ERROR "It seems that external libc interface '${USE_LIBC}' doesn't provide stdlib.h header")
+    message(FATAL_ERROR "It seems that external libc interface '${USE_LIBC}' doesn't provide stdlib.h header")
   endif()
   set(INCLUDE_LIBC_INTERFACE ${USE_LIBC})
- elseif (${USE_LIBC} STREQUAL "JERRY")
+elseif(${USE_LIBC} STREQUAL "JERRY")
   set(INCLUDE_LIBC_INTERFACE ${CMAKE_SOURCE_DIR}/jerry-libc/include)
- endif()
+endif()
 
- # LTO
- if(ENABLE_LTO)
+# LTO
+if(ENABLE_LTO)
   set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -flto")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -flto")
   if(CMAKE_COMPILER_IS_GNUCC)
-   if(NOT "${PLATFORM}" STREQUAL "DARWIN")
-    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-fat-lto-objects")
-   endif()
-   # Use gcc-ar and gcc-ranlib to support LTO
-   set(CMAKE_AR "gcc-ar")
-   set(CMAKE_RANLIB "gcc-ranlib")
+    if(NOT "${PLATFORM}" STREQUAL "DARWIN")
+      set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-fat-lto-objects")
+    endif()
+    # Use gcc-ar and gcc-ranlib to support LTO
+    set(CMAKE_AR "gcc-ar")
+    set(CMAKE_RANLIB "gcc-ranlib")
   endif()
- endif()
+endif()
 
- # should we use default or external port?
- if (${USE_PORT_DIR} STREQUAL "DEFAULT")
+# should we use default or external port?
+if(${USE_PORT_DIR} STREQUAL "DEFAULT")
   set(PORT_DIR ${CMAKE_SOURCE_DIR}/targets/default)
-  if (${USE_LIBC} STREQUAL "COMPILER")
-   set(DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
+  if(${USE_LIBC} STREQUAL "COMPILER")
+    set(DEFINES_JERRY ${DEFINES_JERRY} _BSD_SOURCE)
   endif()
- else()
-   set(PORT_DIR ${USE_PORT_DIR})
- endif()
+else()
+  set(PORT_DIR ${USE_PORT_DIR})
+endif()
 
 # Are there any interfaces for external libraries, other than libc, that should be registered?
- if(NOT EXTERNAL_LIBS_INTERFACE STREQUAL "UNDEFINED")
+if(NOT EXTERNAL_LIBS_INTERFACE STREQUAL "UNDEFINED")
   foreach(EXTERNAL_LIB_INTERFACE ${EXTERNAL_LIBS_INTERFACE})
-   if (NOT EXISTS "${EXTERNAL_LIB_INTERFACE}")
-    message(FATAL_ERROR "Interface directory of the external library doesn't exist: ${EXTERNAL_LIB_INTERFACE}")
-   endif()
-   set(INCLUDE_EXTERNAL_LIBS_INTERFACE ${INCLUDE_EXTERNAL_LIBS_INTERFACE} ${EXTERNAL_LIB_INTERFACE})
+    if(NOT EXISTS "${EXTERNAL_LIB_INTERFACE}")
+      message(FATAL_ERROR "Interface directory of the external library doesn't exist: ${EXTERNAL_LIB_INTERFACE}")
+    endif()
+    set(INCLUDE_EXTERNAL_LIBS_INTERFACE ${INCLUDE_EXTERNAL_LIBS_INTERFACE} ${EXTERNAL_LIB_INTERFACE})
   endforeach()
- endif()
+endif()
 
 # Compiler / Linker flags
- set(COMPILE_FLAGS_COMMON "-fno-builtin")
- if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
+set(COMPILE_FLAGS_COMMON "-fno-builtin")
+if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
   set(LINKER_FLAGS_COMMON "-Wl,-z,noexecstack")
- else()
+else()
   set(LINKER_FLAGS_COMMON "-lSystem")
- endif()
+endif()
 
- # Turn off linking to compiler's default libc, in case jerry-libc or external is used
- if(NOT USE_LIBC STREQUAL "COMPILER")
+# Turn off linking to compiler's default libc, in case jerry-libc or external is used
+if(NOT USE_LIBC STREQUAL "COMPILER")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -nostdlib")
- endif()
+endif()
 
- # Turn off stack protector
-  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-stack-protector")
+# Turn off stack protector
+set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -fno-stack-protector")
 
- # Debug information
-  set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -g -gdwarf-4")
+# Debug information
+set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} -g -gdwarf-4")
 
-  macro(add_jerry_compile_flags)
-    foreach(_flag ${ARGV})
-      set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${_flag}")
-    endforeach()
-  endmacro()
+macro(add_jerry_compile_flags)
+  foreach(_flag ${ARGV})
+    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${_flag}")
+  endforeach()
+endmacro()
 
-  macro(add_jerry_compile_warnings)
-    foreach(_warning ${ARGV})
-      add_jerry_compile_flags(-W${_warning})
-      if(CMAKE_COMPILER_IS_GNUCC)
-        add_jerry_compile_flags(-Werror=${_warning})
-      endif()
-    endforeach()
-  endmacro()
-
-  add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations)
-  add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
-  if(CMAKE_COMPILER_IS_GNUCC)
-    if(${USE_LIBC} STREQUAL "JERRY")
-      add_jerry_compile_flags(-Werror)
+macro(add_jerry_compile_warnings)
+  foreach(_warning ${ARGV})
+    add_jerry_compile_flags(-W${_warning})
+    if(CMAKE_COMPILER_IS_GNUCC)
+      add_jerry_compile_flags(-Werror=${_warning})
     endif()
-    add_jerry_compile_warnings(logical-op)
-  else()
-    add_jerry_compile_flags(-Wno-nested-anon-types)
-  endif()
+  endforeach()
+endmacro()
 
-  if(DEFINED EXTERNAL_COMPILE_FLAGS)
-    foreach(FLAG ${EXTERNAL_COMPILE_FLAGS})
-      set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${FLAG}")
-    endforeach()
-  endif()
+add_jerry_compile_warnings(all extra format-nonliteral init-self conversion sign-conversion format-security missing-declarations)
+add_jerry_compile_flags(-Wno-stack-protector -Wno-attributes)
 
-  if(DEFINED EXTERNAL_LINKER_FLAGS)
-    foreach(FLAG ${EXTERNAL_LINKER_FLAGS})
-      set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${FLAG}")
-    endforeach()
+if(CMAKE_COMPILER_IS_GNUCC)
+  if(${USE_LIBC} STREQUAL "JERRY")
+    add_jerry_compile_flags(-Werror)
   endif()
+  add_jerry_compile_warnings(logical-op)
+else()
+  add_jerry_compile_flags(-Wno-nested-anon-types)
+endif()
 
- # Disable static build
-  if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
-   set(LINKER_FLAGS_STATIC "-static")
-  endif()
+if(DEFINED EXTERNAL_COMPILE_FLAGS)
+  foreach(FLAG ${EXTERNAL_COMPILE_FLAGS})
+    set(COMPILE_FLAGS_COMMON "${COMPILE_FLAGS_COMMON} ${FLAG}")
+  endforeach()
+endif()
 
- # C
-  set(C_FLAGS_COMMON "-std=c99 -pedantic")
+if(DEFINED EXTERNAL_LINKER_FLAGS)
+  foreach(FLAG ${EXTERNAL_LINKER_FLAGS})
+    set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} ${FLAG}")
+  endforeach()
+endif()
+
+# Disable static build
+if(NOT ("${PLATFORM}" STREQUAL "DARWIN"))
+  set(LINKER_FLAGS_STATIC "-static")
+endif()
+
+# C
+set(C_FLAGS_COMMON "-std=c99 -pedantic")
 
 # Strip binary
- if(ENABLE_STRIP AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(ENABLE_STRIP AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(LINKER_FLAGS_COMMON "${LINKER_FLAGS_COMMON} -s")
- endif()
+endif()
 
 # Jerry's libc
- if(BUILD_JERRY_LIBC STREQUAL "ON")
+if(BUILD_JERRY_LIBC STREQUAL "ON")
   add_subdirectory(jerry-libc)
- endif()
+endif()
 
 # Jerry's libm
- if (BUILD_JERRY_LIBM STREQUAL "ON")
+if(BUILD_JERRY_LIBM STREQUAL "ON")
   add_subdirectory(jerry-libm)
- endif()
+endif()
 
- # Jerry's core
- if(BUILD_JERRY_CORE STREQUAL "ON")
+# Jerry's core
+if(BUILD_JERRY_CORE STREQUAL "ON")
   add_subdirectory(jerry-core)
- endif()
+endif()
 
 # Jerry commandline tool
- if (BUILD_JERRY_CMDLINE STREQUAL "ON")
+if(BUILD_JERRY_CMDLINE STREQUAL "ON")
   add_subdirectory(jerry-main)
 endif()
 
 # Unittests
- if (BUILD_UNITTESTS STREQUAL "ON")
+if(BUILD_UNITTESTS STREQUAL "ON")
   add_subdirectory(tests/unit)
- endif()
+endif()
