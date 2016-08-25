@@ -1263,6 +1263,11 @@ parser_post_processing (parser_context_t *context_p) /**< context */
   jmem_cpointer_t *literal_pool_p;
   uint8_t *dst_p;
 
+#ifdef PARSER_DEBUG
+  uint8_t bp_count = 0;
+  debug_literal_map_t literal_map_p;
+#endif /* PARSER_DEBUG */
+
   if ((size_t) context_p->stack_limit + (size_t) context_p->register_count > PARSER_MAXIMUM_STACK_LIMIT)
   {
     parser_raise_error (context_p, PARSER_ERR_STACK_LIMIT_REACHED);
@@ -1294,6 +1299,36 @@ parser_post_processing (parser_context_t *context_p) /**< context */
 
   page_p = context_p->byte_code.first_p;
   offset = 0;
+
+#ifdef PARSER_DEBUG
+  parser_list_iterator_t literal_iterator;
+  lexer_literal_t *literal_p;
+
+  parser_list_iterator_init (&context_p->literal_pool, &literal_iterator);
+  while ((literal_p = (lexer_literal_t *) parser_list_iterator_next (&literal_iterator)))
+  {
+    if (literal_p->type == LEXER_IDENT_LITERAL)
+    {
+      size_t size = literal_p->prop.length;
+      const uint8_t *char_p = literal_p->u.char_p;
+      literal_map_p.literal_len = (uint8_t) size;  // debug_literal_map_t literal_map_p;
+      literal_map_p.index = literal_p->prop.index;
+      printf ("\n");
+      while (size > 0)
+      {
+      literal_map_p.literal[literal_p->prop.length - size] = *char_p++;
+      printf ("%c\n", literal_map_p.literal[literal_p->prop.length - size]);
+      size--;
+      }
+      printf ("\n");
+    }
+
+    literal_map_p.header.type = JERRY_DEBUG_MAP_INFO;
+    literal_map_p.header.size = (uint16_t) (sizeof (debug_literal_map_t) - 255 + literal_map_p.literal_len);
+    // TODO: send the literal_map_p to the remote over TCIP/IP
+    send_to_client(literal_map_p.literal);
+  }
+#endif /* PARSER_DEBUG */
 
   while (page_p != last_page_p || offset < last_position)
   {
@@ -1547,6 +1582,14 @@ parser_post_processing (parser_context_t *context_p) /**< context */
     opcode = (cbc_opcode_t) (*branch_mark_p);
     branch_offset_length = CBC_BRANCH_OFFSET_LENGTH (opcode);
 
+#ifdef PARSER_DEBUG
+    if (opcode == CBC_BREAKPOINT && bp_count <= context_p->line_info.count)
+    {
+      context_p->line_info.pairs[bp_count].offset = opcode_p;
+      bp_count++;
+    }
+#endif /* PARSER_DEBUG */
+
     if (opcode == CBC_JUMP_FORWARD)
     {
       /* These opcodes are deleted from the stream. */
@@ -1676,6 +1719,15 @@ parser_post_processing (parser_context_t *context_p) /**< context */
                          byte_code_p + initializers_length);
 
   parser_cbc_stream_free (&context_p->byte_code);
+
+#ifdef PARSER_DEBUG
+  /* Store the start pointer. */
+  context_p->header_info.header.type = JERRY_DEBUG_HEADER_INFO;
+  context_p->header_info.start_address_p = compiled_code_p;
+  context_p->header_info.name_len = 0;
+  context_p->header_info.header.size = (uint16_t) (sizeof (debug_header_info_t) - 255 - context_p->header_info.name_len);
+  //TODO: send the header_info to the remote over TCIP/IP
+#endif /* PARSER_DEBUG */
 
 #ifdef PARSER_DUMP_BYTE_CODE
   if (context_p->is_show_opcodes)
@@ -1845,9 +1897,12 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
                     (uint32_t) ((128 - sizeof (void *)) / sizeof (lexer_literal_t)));
   parser_stack_init (&context);
 
-#ifndef JERRY_NDEBUG
+#ifndef PARSER_DEBUG
   context.context_stack_depth = 0;
-#endif /* !JERRY_NDEBUG */
+
+  context.statement_line = 0;
+  context.line_info.count = 0;
+#endif /* PARSER_DEBUG */
 
 #ifdef PARSER_DUMP_BYTE_CODE
   context.is_show_opcodes = (JERRY_CONTEXT (jerry_init_flags) & JERRY_INIT_SHOW_OPCODES);
@@ -1856,6 +1911,8 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
   if (context.is_show_opcodes)
   {
     JERRY_DEBUG_MSG ("\n--- Script parsing start ---\n\n");
+    remote_init(); /** Remote connection set up,
+                       waiting connection from the client */
   }
 #endif /* PARSER_DUMP_BYTE_CODE */
 
@@ -1885,6 +1942,15 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
 
     compiled_code = parser_post_processing (&context);
     parser_list_free (&context.literal_pool);
+
+#ifdef PARSER_DEBUG
+  /* Store the line info size and type. */
+  context.line_info.header.type = JERRY_DEBUG_LINE_INFO;
+  context.line_info.header.size = (uint16_t) (sizeof (context.line_info.header)
+                                  + sizeof (context.line_info.count)
+                                  + (sizeof (debug_offset_line_pair_t) * context.line_info.count)
+                                  + 3);
+#endif /* PARSER_DEBUG */
 
 #ifdef PARSER_DUMP_BYTE_CODE
     if (context.is_show_opcodes)
@@ -1924,6 +1990,7 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
   if (context.is_show_opcodes)
   {
     JERRY_DEBUG_MSG ("\n--- Script parsing end ---\n\n");
+    connection_closed();
   }
 #endif /* PARSER_DUMP_BYTE_CODE */
 
@@ -1962,9 +2029,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   saved_context.byte_code_size = context_p->byte_code_size;
   saved_context.literal_pool_data = context_p->literal_pool.data;
 
-#ifndef JERRY_NDEBUG
+#ifdef PARSER_DEBUG
   saved_context.context_stack_depth = context_p->context_stack_depth;
-#endif /* !JERRY_NDEBUG */
+#endif /* PARSER_DEBUG */
 
   /* Reset private part of the context. */
 
@@ -1985,9 +2052,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   context_p->byte_code_size = 0;
   parser_list_reset (&context_p->literal_pool);
 
-#ifndef JERRY_NDEBUG
+#ifdef PARSER_DEBUG
   context_p->context_stack_depth = 0;
-#endif /* !JERRY_NDEBUG */
+#endif /* PARSER_DEBUG */
 
 #ifdef PARSER_DUMP_BYTE_CODE
   if (context_p->is_show_opcodes)
@@ -2179,9 +2246,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   context_p->byte_code_size = saved_context.byte_code_size;
   context_p->literal_pool.data = saved_context.literal_pool_data;
 
-#ifndef JERRY_NDEBUG
+#ifdef PARSER_DEBUG
   context_p->context_stack_depth = saved_context.context_stack_depth;
-#endif /* !JERRY_NDEBUG */
+#endif /* PARSER_DEBUG */
 
   return compiled_code_p;
 } /* parser_parse_function */

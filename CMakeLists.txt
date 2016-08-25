@@ -67,6 +67,7 @@ message(STATUS "COMPILER_DEFAULT_LIBC     " ${COMPILER_DEFAULT_LIBC})
 message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
 message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
 message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
+message(STATUS "BUILD_JERRY_DEBUG         " ${BUILD_JERRY_DEBUG})
 
 # Setup directories
 # Project binary dir
@@ -227,4 +228,9 @@ endif()
 # Unittests
 if(UNITTESTS)
   add_subdirectory(tests/unit)
+endif()
+
+# Remote debugger
+if(BUILD_JERRY_DEBUG)
+  add_subdirectory(jerry-debugger)
 endif()

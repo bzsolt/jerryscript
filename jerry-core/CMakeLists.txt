@@ -55,7 +55,8 @@ set(INCLUDE_CORE
     "${CMAKE_CURRENT_SOURCE_DIR}/lit"
     "${CMAKE_CURRENT_SOURCE_DIR}/parser/js"
     "${CMAKE_CURRENT_SOURCE_DIR}/parser/regexp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/vm")
+    "${CMAKE_CURRENT_SOURCE_DIR}/vm"
+    "${CMAKE_CURRENT_SOURCE_DIR}/debugger")
 
 # Sources
 # Jerry core
@@ -70,6 +71,7 @@ file(GLOB SOURCE_CORE_LIT                   lit/*.c)
 file(GLOB SOURCE_CORE_PARSER_JS             parser/js/*.c)
 file(GLOB SOURCE_CORE_PARSER_REGEXP         parser/regexp/*.c)
 file(GLOB SOURCE_CORE_VM                    vm/*.c)
+file(GLOB SOURCE_CORE_DEBUGGER              debugger/*.c)
 
 set(SOURCE_CORE_FILES
     ${SOURCE_CORE_API}
@@ -82,7 +84,8 @@ set(SOURCE_CORE_FILES
     ${SOURCE_CORE_LIT}
     ${SOURCE_CORE_PARSER_JS}
     ${SOURCE_CORE_PARSER_REGEXP}
-    ${SOURCE_CORE_VM})
+    ${SOURCE_CORE_VM}
+    ${SOURCE_CORE_DEBUGGER})
 
 # Jerry port
 file(GLOB SOURCE_PORT_FILES "${PORT_DIR}/*.c")

@@ -1558,6 +1558,11 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
   parser_stack_push_uint8 (context_p, PARSER_STATEMENT_START);
   parser_stack_iterator_init (context_p, &context_p->last_statement);
 
+#ifdef PARSER_DEBUG
+  /* Set lexical env. */
+  context_p->status_flags |= PARSER_LEXICAL_ENV_NEEDED;
+#endif
+
   while (context_p->token.type == LEXER_LITERAL
          && context_p->token.lit_location.type == LEXER_STRING_LITERAL)
   {
@@ -1641,9 +1646,23 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
   while (context_p->token.type != LEXER_EOS
          || context_p->stack_top_uint8 != PARSER_STATEMENT_START)
   {
-#ifndef JERRY_NDEBUG
+#ifndef PARSER_DEBUG
+  /* Detect the statement lines and add breakpoints to the bytecode list. */
+  if (context_p->line != context_p->statement_line)
+  {
+   if (context_p->token.type != LEXER_RIGHT_BRACE
+       &&  context_p->token.type != LEXER_LEFT_BRACE)
+   {
+     context_p->statement_line = context_p->line;
+     context_p->line_info.pairs[context_p->line_info.count].line = context_p->statement_line;
+     context_p->line_info.count++;
+     parser_emit_cbc (context_p, CBC_BREAKPOINT);
+     parser_flush_cbc (context_p);
+   }
+  }
+
     JERRY_ASSERT (context_p->stack_depth == context_p->context_stack_depth);
-#endif /* !JERRY_NDEBUG */
+#endif /* PARSER_DEBUG */
 
     switch (context_p->token.type)
     {
