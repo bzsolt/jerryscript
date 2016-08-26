@@ -36,6 +36,7 @@ set(COMPILER_DEFAULT_LIBC     OFF                                   CACHE BOOL  
 set(ENABLE_LTO                OFF                                   CACHE BOOL   "Enable LTO build?")
 set(ENABLE_ALL_IN_ONE         ON                                    CACHE BOOL   "Enable all-in-one build?")
 set(ENABLE_STRIP              ON                                    CACHE BOOL   "Discards all symbols from object files?")
+set(BUILD_JERRY_DEBUG         ON                                    CACHE BOOL    "Use jerry-debug?")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
