@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "debugger.c"
 #include "ecma-exceptions.h"
 #include "ecma-helpers.h"
 #include "ecma-literal-storage.h"
