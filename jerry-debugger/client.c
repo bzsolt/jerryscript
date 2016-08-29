@@ -15,7 +15,7 @@
 int main()
 {
         int sock, bytes_received;
-        char recv_data[BUFFER_SIZE], send_data[BUFFER_SIZE];
+        char recv_data[BUFFER_SIZE]; // send_data[BUFFER_SIZE];
         struct hostent *host;
         struct sockaddr_in server_addr;  
 
@@ -43,7 +43,7 @@ int main()
 
         while(1)
         {
-          bytes_received = recv(sock,recv_data,1024,0);
+          bytes_received = (int) recv(sock,recv_data,1024,0);
 
           if ( bytes_received == 0 )
           {

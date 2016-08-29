@@ -1646,7 +1646,7 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
   while (context_p->token.type != LEXER_EOS
          || context_p->stack_top_uint8 != PARSER_STATEMENT_START)
   {
-#ifndef PARSER_DEBUG
+#ifdef PARSER_DEBUG
   /* Detect the statement lines and add breakpoints to the bytecode list. */
   if (context_p->line != context_p->statement_line)
   {

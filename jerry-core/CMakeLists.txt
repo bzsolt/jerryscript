@@ -29,6 +29,7 @@ set(FEATURE_REGEXP_DUMP     OFF    CACHE BOOL   "Enable regexp byte-code dumps?"
 set(FEATURE_SNAPSHOT_SAVE   OFF    CACHE BOOL   "Allow to save snapshot files?")
 set(FEATURE_SNAPSHOT_EXEC   OFF    CACHE BOOL   "Allow to execute snapshot files?")
 set(MEM_HEAP_SIZE_KB        "512"  CACHE STRING "Size of memory heap, in kilobytes")
+set(BUILD_JERRY_DEBUG       ON     CACHE BOOL   "Use jerry-debug?")
 
 # Status messages
 message(STATUS "FEATURE_PROFILE           " ${FEATURE_PROFILE})

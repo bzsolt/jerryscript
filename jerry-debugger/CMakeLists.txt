@@ -18,6 +18,7 @@ project (${JERRY_DEBUGGER_NAME} C)
 
  # Compiler / linker flags
 set(COMPILE_FLAGS_DEBUGGER "${COMPILE_FLAGS_COMMON} ${C_FLAGS_COMMON}")
+set(CMAKE_C_FLAGS "-D_GNU_SOURCE -DPARSER_DEBUG")
 
 # Include directories
  set(INCLUDE_DEBUGGER ${CMAKE_SOURCE_DIR}/jerry-debugger)

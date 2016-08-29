@@ -1897,7 +1897,7 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
                     (uint32_t) ((128 - sizeof (void *)) / sizeof (lexer_literal_t)));
   parser_stack_init (&context);
 
-#ifndef PARSER_DEBUG
+#ifdef PARSER_DEBUG
   context.context_stack_depth = 0;
 
   context.statement_line = 0;
