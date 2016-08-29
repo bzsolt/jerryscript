@@ -24,10 +24,11 @@ string(TOUPPER "${PLATFORM}" PLATFORM)
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS )
 
 # Components
-set(JERRY_CORE    ON  CACHE BOOL "Use jerry-core?")
-set(JERRY_LIBC    ON  CACHE BOOL "Use jerry-libc?")
-set(JERRY_LIBM    ON  CACHE BOOL "Use jerry-libm?")
-set(JERRY_CMDLINE ON  CACHE BOOL "Use jerry command line tool?")
+set(JERRY_CORE     ON  CACHE BOOL "Use jerry-core?")
+set(JERRY_LIBC     ON  CACHE BOOL "Use jerry-libc?")
+set(JERRY_LIBM     ON  CACHE BOOL "Use jerry-libm?")
+set(JERRY_CMDLINE  ON  CACHE BOOL "Use jerry command line tool?")
+set(JERRY_DEBUGGER ON  CACHE BOOL "Use jerry-debugger?")
 set(UNITTESTS     OFF CACHE BOOL "Use unit tests?")
 
 # Optional build settings
@@ -36,7 +37,6 @@ set(COMPILER_DEFAULT_LIBC     OFF                                   CACHE BOOL  
 set(ENABLE_LTO                OFF                                   CACHE BOOL   "Enable LTO build?")
 set(ENABLE_ALL_IN_ONE         ON                                    CACHE BOOL   "Enable all-in-one build?")
 set(ENABLE_STRIP              ON                                    CACHE BOOL   "Discards all symbols from object files?")
-set(BUILD_JERRY_DEBUG         ON                                    CACHE BOOL    "Use jerry-debug?")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
@@ -62,13 +62,13 @@ message(STATUS "JERRY_CORE                " ${JERRY_CORE})
 message(STATUS "JERRY_LIBC                " ${JERRY_LIBC})
 message(STATUS "JERRY_LIBM                " ${JERRY_LIBM})
 message(STATUS "JERRY_CMDLINE             " ${JERRY_CMDLINE})
+message(STATUS "JERRY_DEBUGGER            " ${JERRY_DEBUGGER})
 message(STATUS "UNITTESTS                 " ${UNITTESTS})
 message(STATUS "PORT_DIR                  " ${PORT_DIR})
 message(STATUS "COMPILER_DEFAULT_LIBC     " ${COMPILER_DEFAULT_LIBC})
 message(STATUS "ENABLE_LTO                " ${ENABLE_LTO})
 message(STATUS "ENABLE_ALL_IN_ONE         " ${ENABLE_ALL_IN_ONE})
 message(STATUS "ENABLE_STRIP              " ${ENABLE_STRIP})
-message(STATUS "BUILD_JERRY_DEBUG         " ${BUILD_JERRY_DEBUG})
 
 # Setup directories
 # Project binary dir
@@ -232,6 +232,10 @@ if(UNITTESTS)
 endif()
 
 # Remote debugger
-if(BUILD_JERRY_DEBUG)
-  add_subdirectory(jerry-debugger)
+if(JERRY_DEBUGGER)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_subdirectory(jerry-debugger)
+  else()
+    message(FATAL_ERROR "A debug build is required for the Jerry-debugger!")
+  endif()
 endif()

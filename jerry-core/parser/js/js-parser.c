@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include "debugger.c"
 #include "ecma-exceptions.h"
 #include "ecma-helpers.h"
 #include "ecma-literal-storage.h"
@@ -1898,9 +1897,11 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
                     (uint32_t) ((128 - sizeof (void *)) / sizeof (lexer_literal_t)));
   parser_stack_init (&context);
 
-#ifdef PARSER_DEBUG
+#ifndef JERRY_NDEBUG
   context.context_stack_depth = 0;
+#endif /* !JERRY_NDEBUG */
 
+#ifdef PARSER_DEBUG
   context.statement_line = 0;
   context.line_info.count = 0;
 #endif /* PARSER_DEBUG */
@@ -1912,8 +1913,10 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
   if (context.is_show_opcodes)
   {
     JERRY_DEBUG_MSG ("\n--- Script parsing start ---\n\n");
+#ifdef PARSER_DEBUG
     remote_init(); /** Remote connection set up,
                        waiting connection from the client */
+#endif /* PARSER_DEBUG */
   }
 #endif /* PARSER_DUMP_BYTE_CODE */
 
@@ -1991,7 +1994,9 @@ parser_parse_source (const uint8_t *source_p, /**< valid UTF-8 source code */
   if (context.is_show_opcodes)
   {
     JERRY_DEBUG_MSG ("\n--- Script parsing end ---\n\n");
+#ifdef PARSER_DEBUG
     connection_closed();
+#endif /* PARSER_DEBUG */
   }
 #endif /* PARSER_DUMP_BYTE_CODE */
 
@@ -2030,9 +2035,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   saved_context.byte_code_size = context_p->byte_code_size;
   saved_context.literal_pool_data = context_p->literal_pool.data;
 
-#ifdef PARSER_DEBUG
+#ifndef JERRY_NDEBUG
   saved_context.context_stack_depth = context_p->context_stack_depth;
-#endif /* PARSER_DEBUG */
+#endif /* !JERRY_NDEBUG */
 
   /* Reset private part of the context. */
 
@@ -2053,9 +2058,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   context_p->byte_code_size = 0;
   parser_list_reset (&context_p->literal_pool);
 
-#ifdef PARSER_DEBUG
+#ifndef JERRY_NDEBUG
   context_p->context_stack_depth = 0;
-#endif /* PARSER_DEBUG */
+#endif /* !JERRY_NDEBUG */
 
 #ifdef PARSER_DUMP_BYTE_CODE
   if (context_p->is_show_opcodes)
@@ -2247,9 +2252,9 @@ parser_parse_function (parser_context_t *context_p, /**< context */
   context_p->byte_code_size = saved_context.byte_code_size;
   context_p->literal_pool.data = saved_context.literal_pool_data;
 
-#ifdef PARSER_DEBUG
+#ifndef JERRY_NDEBUG
   context_p->context_stack_depth = saved_context.context_stack_depth;
-#endif /* PARSER_DEBUG */
+#endif /* !JERRY_NDEBUG */
 
   return compiled_code_p;
 } /* parser_parse_function */

@@ -1660,9 +1660,11 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
      parser_flush_cbc (context_p);
    }
   }
-
-    JERRY_ASSERT (context_p->stack_depth == context_p->context_stack_depth);
 #endif /* PARSER_DEBUG */
+
+#ifndef JERRY_NDEBUG
+    JERRY_ASSERT (context_p->stack_depth == context_p->context_stack_depth);
+#endif /* !JERRY_NDEBUG */
 
     switch (context_p->token.type)
     {
