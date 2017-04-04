@@ -45,7 +45,7 @@ matrix:
           packages:
             - gcc-5
             - gcc-5-multilib
-      env: OPTS="--jerry-tests --jerry-test-suite --skip-list=parser-oom.js --buildoptions=--compile-flag=-fsanitize=address,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--compile-flag=-O2,--debug,--jerry-libc=off,--static-link=off,--system-allocator=on,--linker-flag=-fuse-ld=gold" ASAN_OPTIONS=detect_stack_use_after_return=1:check_initialization_order=true:strict_init_order=true TIMEOUT=600
+      env: OPTS="--jerry-tests --jerry-test-suite --skip-list=parser-oom.js --buildoptions=--compile-flag=-fsanitize=address,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--compile-flag=-fno-sanitize-recover=all,--compile-flag=-O2,--debug,--jerry-libc=off,--static-link=off,--system-allocator=on,--linker-flag=-fuse-ld=gold" ASAN_OPTIONS=detect_stack_use_after_return=1:check_initialization_order=true:strict_init_order=true TIMEOUT=600
     - compiler: gcc-5
       addons:
         apt:
@@ -54,7 +54,7 @@ matrix:
           packages:
             - gcc-5
             - gcc-5-multilib
-      env: OPTS="--jerry-tests --jerry-test-suite --skip-list=parser-oom.js --buildoptions=--compile-flag=-fsanitize=undefined,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--debug,--jerry-libc=off,--static-link=off,--system-allocator=on,--linker-flag=-fuse-ld=gold" UBSAN_OPTIONS=print_stacktrace=1 TIMEOUT=600
+      env: OPTS="--jerry-tests --jerry-test-suite --skip-list=parser-oom.js --buildoptions=--compile-flag=-fsanitize=undefined,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--compile-flag=-fno-sanitize-recover=all,--debug,--jerry-libc=off,--static-link=off,--system-allocator=on,--linker-flag=-fuse-ld=gold" UBSAN_OPTIONS=print_stacktrace=1 TIMEOUT=600
   allow_failures:
     - env: OPTS="--check-pylint"
   fast_finish: true
