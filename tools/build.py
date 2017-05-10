@@ -110,7 +110,7 @@ def get_arguments():
                         help='build unittests')
     parser.add_argument('-v', '--verbose', action='store_const', const='ON', default='OFF',
                         help='increase verbosity')
-    parser.add_argument('--vm-exec-stop', metavar='X', choices=['ON', 'OFF'], default='OFF', type=str.upper,
+    parser.add_argument('--vm-exec-stop', metavar='X', choices=['ON', 'OFF'], default='ON', type=str.upper,
                         help='enable VM execution stopping (%(choices)s; default: %(default)s)')
 
     devgroup = parser.add_argument_group('developer options')
