@@ -27,6 +27,11 @@ proc check_part_of_the_file {file line_num col_start col_end} {
     }
 }
 
+
+
+
+
+
 foreach fileName [getSourceFileNames] {
     set checkLine 1
     set checkColStart 0
