@@ -41,6 +41,11 @@ foreach fileName [getSourceFileNames] {
         set colNumber [lindex $token 2]
         set tokenType [lindex $token 3]
 
+
+
+
+
+
         if {$checkLine != $lineNumber} {
             if {!$seenOmitToken} {
                 check_part_of_the_file $fileName $checkLine $checkColStart end
@@ -50,6 +55,11 @@ foreach fileName [getSourceFileNames] {
         } elseif {$seenOmitToken} {
             set checkColStart $colNumber
         }
+
+
+
+
+
 
         if {$tokenType in {ccomment cppcomment stringlit}} {
             check_part_of_the_file $fileName $checkLine $checkColStart $colNumber
