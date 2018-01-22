@@ -36,6 +36,13 @@ foreach fileName [getSourceFileNames] {
     set checkLine 1
     set checkColStart 0
     set seenOmitToken false
+
+
+
+
+
+
+
     foreach token [getTokens $fileName 1 0 -1 -1 {}] {
         set lineNumber [lindex $token 1]
         set colNumber [lindex $token 2]
