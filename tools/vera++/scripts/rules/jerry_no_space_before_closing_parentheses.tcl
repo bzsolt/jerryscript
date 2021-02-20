@@ -27,14 +27,31 @@ proc check_part_of_the_file {file line_num col_start col_end} {
     }
 }
 
+
+
+
+
+
 foreach fileName [getSourceFileNames] {
     set checkLine 1
     set checkColStart 0
     set seenOmitToken false
+
+
+
+
+
+
+
     foreach token [getTokens $fileName 1 0 -1 -1 {}] {
         set lineNumber [lindex $token 1]
         set colNumber [lindex $token 2]
         set tokenType [lindex $token 3]
+
+
+
+
+
 
         if {$checkLine != $lineNumber} {
             if {!$seenOmitToken} {
@@ -45,6 +62,11 @@ foreach fileName [getSourceFileNames] {
         } elseif {$seenOmitToken} {
             set checkColStart $colNumber
         }
+
+
+
+
+
 
         if {$tokenType in {ccomment cppcomment stringlit}} {
             check_part_of_the_file $fileName $checkLine $checkColStart $colNumber
